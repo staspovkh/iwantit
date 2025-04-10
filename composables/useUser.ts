@@ -1,19 +1,23 @@
 import type { CredentialResponse } from 'vue3-google-signin'
 
 export function useUser() {
-  const { loggedIn, user, fetch: refreshSession, clear: logout } = useUserSession()
+  const {
+    loggedIn,
+    user,
+    fetch: refreshSession,
+    clear: logout,
+  } = useUserSession()
 
   const login = (params: CredentialResponse) => {
     if (params.credential) {
-      $fetch('/api/login', {
+      $fetch('/api/logintest', {
         method: 'POST',
         body: {
-          token: params.credential
-        }
+          token: params.credential,
+        },
+      }).then(async () => {
+        await refreshSession()
       })
-        .then(async () => {
-          await refreshSession()
-        })
     }
   }
 
@@ -21,6 +25,6 @@ export function useUser() {
     user,
     loggedIn,
     login,
-    logout
+    logout,
   }
 }
