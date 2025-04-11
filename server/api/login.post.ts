@@ -2,8 +2,7 @@ import { z } from 'zod'
 import { OAuth2Client } from 'google-auth-library'
 import type { User } from '~/types'
 
-const clientId =
-  '64929895773-qrit0c1f2rljcof7jjogb7ik6vg7gdjh.apps.googleusercontent.com'
+const { GOOGLE_AUTH_CLIENT_ID, GOOGLE_AUTH_CLIENT_SECRET } = process.env
 
 const bodySchema = z.object({
   token: z.string(),
@@ -15,7 +14,11 @@ export default defineEventHandler(async (event) => {
 
   try {
     if (token) {
-      const client = new OAuth2Client()
+      const client = new OAuth2Client({
+        clientId: GOOGLE_AUTH_CLIENT_ID,
+        clientSecret: GOOGLE_AUTH_CLIENT_SECRET,
+        redirectUri: 'postmessage',
+      })
 
       return {
         ok: true,
