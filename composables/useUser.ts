@@ -10,7 +10,7 @@ export function useUser() {
 
   const login = (params: CredentialResponse) => {
     if (params.credential) {
-      $fetch('/api/logintest', {
+      $fetch('/api/login', {
         method: 'POST',
         body: {
           token: params.credential,
