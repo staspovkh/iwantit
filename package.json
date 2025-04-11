@@ -7,7 +7,10 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "docker:build": "docker build -t iwantit .",
+    "docker:run": "docker run iwantit",
+    "docker:stop": "docker stop iwantit"
   },
   "dependencies": {
     "@nuxt/content": "^3.4.0",
