@@ -15,6 +15,8 @@ export default defineEventHandler(async (event) => {
 
   try {
     if (token) {
+      const client = new OAuth2Client()
+
       return {
         ok: true,
         payload: {
