@@ -18,22 +18,22 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   modules: [
-    '@nuxt/content',
+    '@nuxthub/core',
+    '@nuxtjs/supabase',
     '@nuxt/eslint',
     '@nuxt/fonts',
     '@nuxt/icon',
     '@nuxt/image',
     '@nuxt/scripts',
-    'nuxt-vue3-google-signin',
-    'nuxt-auth-utils',
   ],
+  supabase: {
+    redirect: false,
+  },
   fonts: {
     processCSSVariables: true,
     families: [{ name: 'Inter', provider: 'google' }],
   },
-  googleSignIn: {
-    clientId:
-      '64929895773-qrit0c1f2rljcof7jjogb7ik6vg7gdjh.apps.googleusercontent.com',
-    // clientSecret: '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'
+  icon: {
+    mode: 'svg',
   },
 })

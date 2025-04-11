@@ -1,31 +1,34 @@
-import type { CredentialResponse } from 'vue3-google-signin'
-import type { User } from '~/types'
+import type { User } from "~/types"
 
 export function useUser() {
-  const {
-    loggedIn,
-    user,
-    fetch: refreshSession,
-    clear: logout,
-  } = useUserSession()
+  const requestUrl = useRequestURL()
+  const user = useSupabaseUser()
 
-  const login = (params: CredentialResponse, save?: boolean) => {
-    if (params.credential) {
-      $fetch('/api/login', {
-        method: 'POST',
-        body: {
-          token: params.credential,
-          save,
-        },
-      }).then(async () => {
-        await refreshSession()
-      })
-    }
+  const login = async () => {
+    await useSupabaseClient().auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: requestUrl.toString(),
+      },
+    })
+  }
+
+  const logout = async () => {
+    await useSupabaseClient().auth.signOut()
   }
 
   return {
-    user: computed(() => user.value as User | null),
-    loggedIn,
+    user: computed<User | undefined>(() => {
+      if (user.value) {
+        return {
+          id: user.value.id,
+          email: user.value.email,
+          name: user.value.user_metadata?.full_name || '',
+          picture: user.value.user_metadata?.avatar_url || '',
+        }
+      }
+      return undefined
+    }),
     login,
     logout,
   }
