@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { OAuth2Client } from 'google-auth-library'
+import type { User } from '~/types'
 
 const clientId =
   '64929895773-qrit0c1f2rljcof7jjogb7ik6vg7gdjh.apps.googleusercontent.com'
@@ -20,10 +21,30 @@ export default defineEventHandler(async (event) => {
     })
     const payload = ticket.getPayload()
 
-    await setUserSession(event, { user: payload })
+    if (payload?.email) {
+      const user: User = {
+        id: payload.sub,
+        email: payload.email,
+        name: payload.name,
+        picture: payload.picture,
+        given_name: payload.given_name,
+        family_name: payload.family_name,
+      }
+      await setUserSession(event, { user })
+      return {
+        ok: true,
+        payload: user,
+      }
+    }
 
-    return { ok: true, payload }
+    return {
+      ok: false,
+      error: 'Invalid token',
+    }
   } catch (error) {
-    return { ok: false, error }
+    return {
+      ok: false,
+      error,
+    }
   }
 })

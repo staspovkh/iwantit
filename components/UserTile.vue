@@ -1,5 +1,7 @@
 <script setup lang="ts">
-defineProps<{ user: any }>()
+import type { User } from '~/types'
+
+defineProps<{ user: User }>()
 </script>
 <template>
   <div class="grid grid-cols-[4rem_1fr] items-center gap-4">

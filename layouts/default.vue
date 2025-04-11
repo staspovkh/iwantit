@@ -5,7 +5,7 @@ const { loggedIn, user, login, logout } = useUser()
 <template>
   <div>
     <header class="flex items-center justify-center p-4">
-      <div v-if="loggedIn">
+      <div v-if="loggedIn && user">
         <UserTile :user="user">
           <button
             class="cursor-pointer underline text-blue-500"

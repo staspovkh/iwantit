@@ -1,4 +1,5 @@
 import type { CredentialResponse } from 'vue3-google-signin'
+import type { User } from '~/types'
 
 export function useUser() {
   const {
@@ -22,7 +23,7 @@ export function useUser() {
   }
 
   return {
-    user,
+    user: computed(() => user.value as User | null),
     loggedIn,
     login,
     logout,
