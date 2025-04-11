@@ -14,28 +14,36 @@ export default defineEventHandler(async (event) => {
   const { token } = await readValidatedBody(event, bodySchema.parse)
 
   try {
-    const client = new OAuth2Client()
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: clientId,
-    })
-    const payload = ticket.getPayload()
-
-    if (payload?.email) {
-      const user: User = {
-        id: payload.sub,
-        email: payload.email,
-        name: payload.name,
-        picture: payload.picture,
-        given_name: payload.given_name,
-        family_name: payload.family_name,
-      }
-
+    if (token) {
       return {
         ok: true,
-        payload: user,
+        payload: {
+          token,
+        },
       }
     }
+    // const client = new OAuth2Client()
+    // const ticket = await client.verifyIdToken({
+    //   idToken: token,
+    //   audience: clientId,
+    // })
+    // const payload = ticket.getPayload()
+
+    // if (payload?.email) {
+    //   const user: User = {
+    //     id: payload.sub,
+    //     email: payload.email,
+    //     name: payload.name,
+    //     picture: payload.picture,
+    //     given_name: payload.given_name,
+    //     family_name: payload.family_name,
+    //   }
+
+    //   return {
+    //     ok: true,
+    //     payload: user,
+    //   }
+    // }
 
     return {
       ok: false,
