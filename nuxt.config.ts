@@ -10,6 +10,11 @@ export default defineNuxtConfig({
   vite: {
     plugins: [tailwindcss()],
   },
+  nitro: {
+    experimental: {
+      openAPI: true,
+    },
+  },
   css: ['~/assets/css/main.css'],
 
   modules: [

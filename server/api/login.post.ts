@@ -8,10 +8,11 @@ const clientSecret = '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'
 
 const bodySchema = z.object({
   token: z.string(),
+  save: z.boolean().optional(),
 })
 
 export default defineEventHandler(async (event) => {
-  const { token } = await readValidatedBody(event, bodySchema.parse)
+  const { token, save } = await readValidatedBody(event, bodySchema.parse)
 
   try {
     const client = new OAuth2Client({ clientId, clientSecret })
@@ -25,12 +26,14 @@ export default defineEventHandler(async (event) => {
       const user: User = {
         id: payload.sub,
         email: payload.email,
-        // name: payload.name,
-        // picture: payload.picture,
-        // given_name: payload.given_name,
-        // family_name: payload.family_name,
+        name: payload.name,
+        picture: payload.picture,
+        given_name: payload.given_name,
+        family_name: payload.family_name,
       }
-      await setUserSession(event, { user })
+      if (save) {
+        await setUserSession(event, { user })
+      }
       return {
         ok: true,
         payload: user,

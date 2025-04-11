@@ -9,12 +9,13 @@ export function useUser() {
     clear: logout,
   } = useUserSession()
 
-  const login = (params: CredentialResponse) => {
+  const login = (params: CredentialResponse, save?: boolean) => {
     if (params.credential) {
       $fetch('/api/login', {
         method: 'POST',
         body: {
           token: params.credential,
+          save,
         },
       }).then(async () => {
         await refreshSession()
