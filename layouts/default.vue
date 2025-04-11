@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { GoogleSignInButton } from 'vue3-google-signin'
 const { loggedIn, user, login, logout } = useUser()
-const saveSession = ref(false)
 </script>
 <template>
   <div>
@@ -17,12 +16,11 @@ const saveSession = ref(false)
         </UserTile>
       </div>
       <div v-else>
-        <input v-model="saveSession" type="checkbox" />
         <GoogleSignInButton
           one-tap
           auto-select
           text="signin"
-          @success="login($event, saveSession)"
+          @success="login($event)"
         />
       </div>
     </header>
