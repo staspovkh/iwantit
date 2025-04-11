@@ -25,10 +25,10 @@ export default defineEventHandler(async (event) => {
       const user: User = {
         id: payload.sub,
         email: payload.email,
-        name: payload.name,
-        picture: payload.picture,
-        given_name: payload.given_name,
-        family_name: payload.family_name,
+        // name: payload.name,
+        // picture: payload.picture,
+        // given_name: payload.given_name,
+        // family_name: payload.family_name,
       }
       await setUserSession(event, { user })
       return {
