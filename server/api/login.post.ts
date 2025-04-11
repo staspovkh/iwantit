@@ -4,7 +4,6 @@ import type { User } from '~/types'
 
 const clientId =
   '64929895773-qrit0c1f2rljcof7jjogb7ik6vg7gdjh.apps.googleusercontent.com'
-const clientSecret = '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'
 
 const bodySchema = z.object({
   token: z.string(),
@@ -12,10 +11,10 @@ const bodySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const { token, save } = await readValidatedBody(event, bodySchema.parse)
+  const { token } = await readValidatedBody(event, bodySchema.parse)
 
   try {
-    const client = new OAuth2Client({ clientId, clientSecret })
+    const client = new OAuth2Client()
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: clientId,
@@ -31,9 +30,7 @@ export default defineEventHandler(async (event) => {
         given_name: payload.given_name,
         family_name: payload.family_name,
       }
-      if (save) {
-        await setUserSession(event, { user })
-      }
+
       return {
         ok: true,
         payload: user,
