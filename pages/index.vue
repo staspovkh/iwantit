@@ -39,7 +39,7 @@ const { execute: createWishlist } = useLazyAsyncData(
 
 const deleteWishlist = async (id: string) => {
   const result = await $fetch('/api/wishlist/remove', {
-    method: 'DELETE',
+    method: 'POST',
     body: {
       id,
     },
