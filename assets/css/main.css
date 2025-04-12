@@ -9,3 +9,9 @@
     @apply bg-gray-100;
   }
 }
+
+@layer components {
+  .tile {
+    @apply bg-white rounded-xl shadow-md p-4;
+  }
+}

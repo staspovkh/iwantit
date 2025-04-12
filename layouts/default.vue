@@ -10,9 +10,7 @@
       </div>
     </header>
     <div class="max-w-7xl mx-auto p-6">
-      <div class="bg-white rounded-xl p-4 shadow-md">
-        <slot />
-      </div>
+      <slot />
     </div>
   </div>
 </template>

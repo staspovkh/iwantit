@@ -1,13 +1,9 @@
-import { serverSupabaseClient } from '#supabase/server'
-
 export default defineEventHandler(async (event) => {
-  if (event.context.auth.user) {
-    const client = await serverSupabaseClient(event)
-
-    const { data, error } = await client
+  if (event.context.supabase.user) {
+    const { data, error } = await event.context.supabase.client
       .from('wishlist')
       .select('id, name')
-      .eq('user', event.context.auth.user.id)
+      .eq('user', event.context.supabase.user.id)
 
     if (!error) {
       return {

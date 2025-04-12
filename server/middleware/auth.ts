@@ -1,14 +1,18 @@
-import { serverSupabaseClient, serverSupabaseUser } from '#supabase/server'
+import { serverSupabaseClient } from '#supabase/server'
+
+const allowedRequests = ['/api/wishlist/get', '/api/wishlist/my']
 
 export default defineEventHandler(async (event) => {
-  const client = await serverSupabaseClient(event)
-  const user = (await client.auth.getUser()).data.user
-  event.context.auth = { user }
-  if (event.method !== 'GET' && !user) {
-    throw createError({
-      statusCode: 401,
-      statusMessage: 'Unauthorized',
-      message: 'Unauthorized',
-    })
+  if (event.path.startsWith('/api/')) {
+    const client = await serverSupabaseClient(event)
+    const user = (await client.auth.getUser()).data.user
+    event.context.supabase = { client, user }
+    if (!allowedRequests.includes(event.path) && !user) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Unauthorized',
+        message: 'Unauthorized',
+      })
+    }
   }
 })

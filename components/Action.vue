@@ -8,7 +8,7 @@ const componentName = computed(() => {
   <component
     :is="componentName"
     :to="to"
-    class="cursor-pointer hover:text-blue-500"
+    class="flex items-center gap-1 cursor-pointer hover:text-blue-500"
   >
     <Icon v-if="icon" :name="icon" />
     <slot />
