@@ -6,13 +6,7 @@ const { user, login, logout } = useUser()
   <div class="flex items-center gap-4">
     <template v-if="user">
       <UserTile :user="user" />
-      <button
-        class="cursor-pointer hover:text-blue-500"
-        title="Logout"
-        @click="logout()"
-      >
-        <Icon name="ic:outline-logout" width="24" height="24" />
-      </button>
+      <Action icon="ic:outline-logout" title="Logout" @click="logout()" />
     </template>
     <template v-else>
       <GoogleSignInButton
@@ -23,14 +17,7 @@ const { user, login, logout } = useUser()
         size="small"
         @success="login($event.credential)"
       />
-
-      <button
-        class="cursor-pointer hover:text-blue-500"
-        title="Login"
-        @click="login()"
-      >
-        <Icon name="ic:outline-login" width="24" height="24" />
-      </button>
+      <Action icon="ic:outline-login" title="Login" @click="login()" />
     </template>
   </div>
 </template>

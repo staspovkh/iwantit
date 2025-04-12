@@ -18,7 +18,6 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   modules: [
-    '@nuxthub/core',
     '@nuxtjs/supabase',
     '@nuxt/eslint',
     '@nuxt/fonts',
@@ -36,9 +35,18 @@ export default defineNuxtConfig({
   },
   icon: {
     mode: 'svg',
+    componentName: 'NuxtIcon',
   },
   googleSignIn: {
     clientId:
       '64929895773-qrit0c1f2rljcof7jjogb7ik6vg7gdjh.apps.googleusercontent.com',
+  },
+  experimental: {
+    defaults: {
+      nuxtLink: {
+        activeClass: '',
+        exactActiveClass: '',
+      },
+    },
   },
 })

@@ -119,6 +119,9 @@ export default withNuxt(prettierRecommended, {
         ignoreDeclarationSort: true,
       },
     ],
+
+    "vue/multi-word-component-names": 0,
+
     "prettier/prettier": [
       1,
       {

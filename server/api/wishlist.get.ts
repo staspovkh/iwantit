@@ -3,7 +3,7 @@ import { serverSupabaseClient } from '#supabase/server'
 export default defineEventHandler(async (event) => {
   const client = await serverSupabaseClient(event)
 
-  const { data } = await client.from('wishlists').select('name')
+  const { data } = await client.from('wishlist').select('name')
 
   return {
     ok: true,

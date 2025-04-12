@@ -1,23 +1,18 @@
-<script setup lang="ts">
-</script>
+<script setup lang="ts"></script>
 <template>
   <div>
-    <header class="shadow-md">
+    <header class="bg-white shadow-md">
       <div class="max-w-7xl mx-auto p-6 flex items-center gap-4">
-        <NuxtLink
-          class="cursor-pointer hover:text-blue-500 mr-auto"
-          to="/"
-          title="Home"
-        >
-          <Icon name="ic:outline-home" width="24" height="24" />
-        </NuxtLink>
+        <Action class="mr-auto" to="/" icon="ic:outline-home" title="Home" />
         <ClientOnly>
           <UserLogin />
         </ClientOnly>
       </div>
     </header>
     <div class="max-w-7xl mx-auto p-6">
-      <slot />
+      <div class="bg-white rounded-xl p-4 shadow-md">
+        <slot />
+      </div>
     </div>
   </div>
 </template>
