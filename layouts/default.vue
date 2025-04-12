@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const { user, login, logout } = useUser()
 </script>
 <template>
   <div>
@@ -13,25 +12,7 @@ const { user, login, logout } = useUser()
           <Icon name="ic:outline-home" width="24" height="24" />
         </NuxtLink>
         <ClientOnly>
-          <template v-if="user">
-            <UserTile :user="user" />
-            <button
-              class="cursor-pointer hover:text-blue-500"
-              title="Logout"
-              @click="() => logout()"
-            >
-              <Icon name="ic:outline-logout" width="24" height="24" />
-            </button>
-          </template>
-          <template v-else>
-            <button
-              class="cursor-pointer hover:text-blue-500"
-              title="Login"
-              @click="() => login()"
-            >
-              <Icon name="ic:outline-login" width="24" height="24" />
-            </button>
-          </template>
+          <UserLogin />
         </ClientOnly>
       </div>
     </header>

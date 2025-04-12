@@ -1,11 +1,18 @@
-import type { User } from "~/types"
+import type { User } from '~/types'
 
 export function useUser() {
   const requestUrl = useRequestURL()
   const user = useSupabaseUser()
 
-  const login = async () => {
-    await useSupabaseClient().auth.signInWithOAuth({
+  const login = async (token?: string) => {
+    const supabase = useSupabaseClient()
+    if (token) {
+      return supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token,
+      })
+    }
+    return supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: requestUrl.toString(),
@@ -13,8 +20,8 @@ export function useUser() {
     })
   }
 
-  const logout = async () => {
-    await useSupabaseClient().auth.signOut()
+  const logout = () => {
+    return useSupabaseClient().auth.signOut()
   }
 
   return {

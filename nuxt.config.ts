@@ -25,6 +25,7 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@nuxt/image',
     '@nuxt/scripts',
+    'nuxt-vue3-google-signin',
   ],
   supabase: {
     redirect: false,
@@ -35,5 +36,9 @@ export default defineNuxtConfig({
   },
   icon: {
     mode: 'svg',
+  },
+  googleSignIn: {
+    clientId:
+      '64929895773-qrit0c1f2rljcof7jjogb7ik6vg7gdjh.apps.googleusercontent.com',
   },
 })
