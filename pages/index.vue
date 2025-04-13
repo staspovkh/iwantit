@@ -22,16 +22,16 @@ onMounted(() => {
 
 const modalOpen = ref(false)
 
-const wishlistName = ref()
 const wishlistLoading = ref(false)
+const wishlistModel = reactive({
+  name: '',
+})
 
-const addWishlist = async (name: string) => {
+const addWishlist = async () => {
   wishlistLoading.value = true
   const result = await $fetch('/api/wishlist/add', {
     method: 'POST',
-    body: {
-      name,
-    },
+    body: wishlistModel,
   })
   if (result.ok) {
     await getMyWishlists()
@@ -71,23 +71,20 @@ const removeWishlist = async (id: string) => {
             @click="removeWishlist(wishlist.id)"
           />
         </li>
-        <li>
-          <Action
-            class="tile w-full justify-center"
-            icon="ic:outline-plus"
-            @click="modalOpen = true"
-          >
+        <li class="col-span-full flex justify-center">
+          <Action button icon="ic:outline-plus" @click="modalOpen = true">
             add wishlist
           </Action>
         </li>
       </ul>
     </template>
     <Modal title="Add wishlist" :open="modalOpen" @close="modalOpen = false">
-      <input v-model="wishlistName" class="border" type="text" />
-      <br />
-      <Action @click="wishlistName ? addWishlist(wishlistName) : void 0">
-        add wishlist
-      </Action>
+      <Form
+        :model="wishlistModel"
+        name="wishlist"
+        button-label="add wishlist"
+        @submitted="addWishlist()"
+      />
     </Modal>
     <Spinner :loading="wishlistLoading" />
   </div>

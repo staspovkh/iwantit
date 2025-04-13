@@ -2,16 +2,27 @@
 
 @theme {
   --font-sans: 'Inter', sans-serif;
+
+  --color-main: #1E1E2F;
+  --color-error: #DE350B;
 }
 
 @layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    @apply border-black/10;
+  }
+
   body {
-    @apply bg-gray-100;
+    @apply bg-gray-100 text-main;
   }
 }
 
 @layer components {
   .tile {
-    @apply bg-white rounded-xl shadow-md p-4;
+    @apply bg-white rounded-xl shadow-md p-4 border;
   }
 }

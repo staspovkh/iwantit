@@ -27,29 +27,28 @@ onMounted(() => {
 
 const modalOpen = ref(false)
 
-const itemName = ref('')
-const itemDescription = ref('')
 const itemLoading = ref(false)
+const itemModel = reactive({
+  name: '',
+  description: '',
+})
 
 const addItem = async () => {
-  if (itemName.value && itemDescription.value) {
-    itemLoading.value = true
-    const result = await $fetch('/api/wishlistitem/add', {
-      method: 'POST',
-      body: {
-        wishlist: wishlistId,
-        name: itemName.value,
-        description: itemDescription.value,
-      },
-    })
-    if (result.ok) {
-      itemName.value = ''
-      itemDescription.value = ''
-      await getWishlist()
-      modalOpen.value = false
-    }
-    itemLoading.value = false
+  itemLoading.value = true
+  const result = await $fetch('/api/wishlistitem/add', {
+    method: 'POST',
+    body: {
+      ...itemModel,
+      wishlist: wishlistId,
+    },
+  })
+  if (result.ok) {
+    await getWishlist()
+    modalOpen.value = false
+    itemModel.name = ''
+    itemModel.description = ''
   }
+  itemLoading.value = false
 }
 
 const removeItem = async (id: string) => {
@@ -88,12 +87,8 @@ const removeItem = async (id: string) => {
             <p class="text-gray-500">{{ item.description }}</p>
           </div>
         </li>
-        <li>
-          <Action
-            class="tile w-full h-full justify-center"
-            icon="ic:outline-plus"
-            @click="modalOpen = true"
-          >
+        <li class="col-span-full flex justify-center">
+          <Action button icon="ic:outline-plus" @click="modalOpen = true">
             add item
           </Action>
         </li>
@@ -103,21 +98,12 @@ const removeItem = async (id: string) => {
         :open="modalOpen"
         @close="modalOpen = false"
       >
-        <input
-          v-model="itemName"
-          type="text"
-          placeholder="Name"
-          class="border"
+        <Form
+          :model="itemModel"
+          name="wishlist-item"
+          button-label="add wishlist item"
+          @submitted="addItem()"
         />
-        <br />
-        <input
-          v-model="itemDescription"
-          type="text"
-          placeholder="Description"
-          class="border"
-        />
-        <br />
-        <Action @click="addItem()">add wishlist item</Action>
       </Modal>
       <Spinner :loading="itemLoading" />
     </template>
