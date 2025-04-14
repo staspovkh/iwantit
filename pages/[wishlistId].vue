@@ -1,24 +1,13 @@
 <script setup lang="ts">
-definePageMeta({
-  keepalive: true,
-})
+import type { WishlistItem, WishlistItemData } from '~/types'
 
 const {
   params: { wishlistId },
 } = useRoute<'wishlistId'>()
 
-const { data: wishlist, execute: getWishlist } = await useAsyncData(
-  `wishlist-${wishlistId}`,
-  async () => {
-    const result = await $fetch('/api/wishlist/get', {
-      method: 'POST',
-      body: {
-        id: wishlistId,
-      },
-    })
-    return result.payload
-  },
-  { server: false },
+const { user } = useUser()
+const { loading, wishlist, getWishlist, addItem, removeItem } = useWishlist(
+  String(wishlistId),
 )
 
 onMounted(() => {
@@ -26,86 +15,53 @@ onMounted(() => {
 })
 
 const modalOpen = ref(false)
+const itemToEdit = ref<WishlistItem | undefined>()
 
-const itemLoading = ref(false)
-const itemModel = reactive({
-  name: '',
-  description: '',
+const openModal = (item?: WishlistItem) => {
+  modalOpen.value = true
+  itemToEdit.value = item
+}
+
+const closeModal = () => {
+  modalOpen.value = false
+  itemToEdit.value = undefined
+}
+
+const submitModal = async (item: WishlistItemData) => {
+  await addItem({
+    ...item,
+    id: itemToEdit.value?.id,
+  })
+  closeModal()
+}
+
+definePageMeta({
+  keepalive: true,
 })
-
-const addItem = async () => {
-  itemLoading.value = true
-  const result = await $fetch('/api/wishlistitem/add', {
-    method: 'POST',
-    body: {
-      ...itemModel,
-      wishlist: wishlistId,
-    },
-  })
-  if (result.ok) {
-    await getWishlist()
-    modalOpen.value = false
-    itemModel.name = ''
-    itemModel.description = ''
-  }
-  itemLoading.value = false
-}
-
-const removeItem = async (id: string) => {
-  itemLoading.value = true
-  const result = await $fetch('/api/wishlistitem/remove', {
-    method: 'POST',
-    body: {
-      id,
-    },
-  })
-  if (result.ok) {
-    await getWishlist()
-  }
-  itemLoading.value = false
-}
 </script>
 <template>
   <div>
-    <h1 class="text-center text-2xl font-bold">{{ wishlist?.name }}</h1>
     <template v-if="wishlist">
-      <ul class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-        <li
-          v-for="item in wishlist.wishlist_item"
+      <h1 class="text-center text-2xl font-bold">{{ wishlist.name }}</h1>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+        <WishlistItem
+          v-for="item in wishlist.items"
           :key="item.id"
-          class="tile p-0"
-        >
-          <div class="p-4">
-            <div class="flex justify-between gap-2">
-              <h2 class="font-bold">{{ item.name }}</h2>
-              <Action
-                icon="ic:outline-delete-forever"
-                title="Remove"
-                @click="removeItem(item.id)"
-              />
-            </div>
-            <p class="text-gray-500">{{ item.description }}</p>
-          </div>
-        </li>
-        <li class="col-span-full flex justify-center">
-          <Action button icon="ic:outline-plus" @click="modalOpen = true">
+          :item="item"
+          :actions="wishlist.user === user?.id"
+          @edit="openModal(item)"
+          @remove="removeItem(item.id)"
+        />
+        <div class="col-span-full flex justify-center">
+          <Action button icon="ic:outline-plus" @click="openModal()">
             add item
           </Action>
-        </li>
-      </ul>
-      <Modal
-        title="Add wishlist item"
-        :open="modalOpen"
-        @close="modalOpen = false"
-      >
-        <Form
-          :model="itemModel"
-          name="wishlist-item"
-          button-label="add wishlist item"
-          @submitted="addItem()"
-        />
+        </div>
+      </div>
+      <Modal title="Add wishlist item" :open="modalOpen" @close="closeModal()">
+        <WishlistItemForm :item="itemToEdit" @submitted="submitModal($event)" />
       </Modal>
-      <Spinner :loading="itemLoading" />
+      <Spinner :loading="loading" />
     </template>
   </div>
 </template>

@@ -10,7 +10,7 @@
         </ClientOnly>
       </div>
     </header>
-    <div class="max-w-7xl mx-auto p-6">
+    <div class="max-w-7xl mx-auto px-4 py-6">
       <slot />
     </div>
   </div>

@@ -71,15 +71,19 @@ watch(rawValues, (newValues) => {
 })
 
 watch(
-  () => props.model,
+  () => {
+    return keys.value.reduce(
+      (acc, key) => {
+        acc[key] = props.model[key]
+        return acc
+      },
+      {} as Record<string, string | boolean | undefined>,
+    )
+  },
   (newValues, oldValues) => {
     for (const [key, newVal] of Object.entries(newValues)) {
       if (newVal !== oldValues[key] && typeof newVal !== 'undefined') {
-        setFieldValue(
-          `value.${key}`,
-          newVal,
-          typeof oldValues[key] !== 'undefined',
-        )
+        setFieldValue(key, newVal, typeof oldValues[key] !== 'undefined')
       }
     }
   },

@@ -1,66 +1,29 @@
 <script setup lang="ts">
-definePageMeta({
-  keepalive: true,
-})
-
 const { user } = useUser()
-
-const { data: myWishlists, execute: getMyWishlists } = useLazyAsyncData(
-  async () => {
-    const result = await $fetch('/api/wishlist/my')
-    return result.payload
-  },
-  {
-    immediate: false,
-  },
-)
-
-watch(user, () => getMyWishlists())
-onMounted(() => {
-  getMyWishlists()
-})
+const { loading, wishlists, getWishlists, addWishlist, removeWishlist } =
+  useWishlists()
 
 const modalOpen = ref(false)
-
-const wishlistLoading = ref(false)
 const wishlistModel = reactive({
   name: '',
 })
 
-const addWishlist = async () => {
-  wishlistLoading.value = true
-  const result = await $fetch('/api/wishlist/add', {
-    method: 'POST',
-    body: wishlistModel,
-  })
-  if (result.ok) {
-    await getMyWishlists()
-    modalOpen.value = false
-  }
-  wishlistLoading.value = false
-}
+watch(user, () => getWishlists())
+onMounted(() => {
+  getWishlists()
+})
 
-const removeWishlist = async (id: string) => {
-  wishlistLoading.value = true
-  const result = await $fetch('/api/wishlist/remove', {
-    method: 'POST',
-    body: {
-      id,
-    },
-  })
-  if (result.ok) {
-    await getMyWishlists()
-  }
-  wishlistLoading.value = false
-}
+definePageMeta({
+  keepalive: true,
+})
 </script>
 <template>
   <div>
-    <template v-if="myWishlists">
+    <template v-if="user">
       <h1 class="text-center text-2xl font-bold">Wish lists</h1>
       <ul class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
         <li
-          v-for="wishlist in myWishlists"
+          v-for="wishlist in wishlists"
           :key="wishlist.id"
           class="tile flex items-center justify-between gap-1 font-bold"
         >
@@ -83,9 +46,9 @@ const removeWishlist = async (id: string) => {
         :model="wishlistModel"
         name="wishlist"
         button-label="add wishlist"
-        @submitted="addWishlist()"
+        @submitted="addWishlist(wishlistModel)"
       />
     </Modal>
-    <Spinner :loading="wishlistLoading" />
+    <Spinner :loading="loading" />
   </div>
 </template>

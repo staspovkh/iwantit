@@ -5,10 +5,10 @@ export default defineEventHandler(async (event) => {
       .select('id, name')
       .eq('user', event.context.supabase.user.id)
 
-    if (!error) {
+    if (!error && data) {
       return {
         ok: true,
-        payload: data,
+        payload: [...data],
       }
     }
   }

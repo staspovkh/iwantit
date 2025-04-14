@@ -42,20 +42,22 @@ export const validationConfig = () => {
       { length, minLength, maxLength, customMessage }: RuleConfig,
     ) => {
       const valueLength = String(value ?? '').length
-      if (typeof length === 'number' && valueLength !== length) {
-        return prepareMessage(customMessage ?? 'forms.errors.length', {
-          length,
-        })
-      } else {
-        if (typeof minLength === 'number' && valueLength < minLength) {
-          return prepareMessage(customMessage ?? 'forms.errors.minlength', {
+      if (valueLength > 0) {
+        if (typeof length === 'number' && valueLength !== length) {
+          return prepareMessage(customMessage ?? 'forms.errors.length', {
             length,
           })
-        }
-        if (typeof maxLength === 'number' && valueLength > maxLength) {
-          return prepareMessage(customMessage ?? 'forms.errors.maxlength', {
-            maxLength,
-          })
+        } else {
+          if (typeof minLength === 'number' && valueLength < minLength) {
+            return prepareMessage(customMessage ?? 'forms.errors.minlength', {
+              length,
+            })
+          }
+          if (typeof maxLength === 'number' && valueLength > maxLength) {
+            return prepareMessage(customMessage ?? 'forms.errors.maxlength', {
+              maxLength,
+            })
+          }
         }
       }
       return true

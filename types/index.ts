@@ -5,6 +5,27 @@ export type User = {
   picture?: string
 }
 
+export type WishlistItemData = {
+  name: string
+  description?: string
+  picture?: string
+  price?: string
+  currency?: string
+  brand?: string
+  link?: string
+}
+
+export type WishlistItem = WishlistItemData & {
+  id: string
+}
+
+export type Wishlist = {
+  id: string
+  name: string
+  items: WishlistItem[]
+  user?: string
+}
+
 export interface Form {
   name: string
   model: {
