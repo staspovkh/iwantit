@@ -9,7 +9,7 @@ export type WishlistItemData = {
   name: string
   description?: string
   picture?: string
-  price?: string
+  price?: string | number
   currency?: string
   brand?: string
   link?: string
@@ -30,12 +30,14 @@ export type Wishlist = {
 export interface Form {
   name: string
   model: {
-    [key: string]: string | boolean
+    [key: string]: string | number | boolean
   }
   id?: string
   buttonLabel?: string
   submitting?: boolean
 }
+
+export type InputValue = string | number | boolean
 
 export interface InputTemplate {
   name: string
@@ -61,7 +63,7 @@ export interface InputText extends InputTemplate {
     | 'tel'
     | 'checkbox'
     | 'radio'
-  value?: string | boolean
+  value?: InputValue
   placeholder?: string
   min?: string
   max?: string

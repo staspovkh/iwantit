@@ -27,6 +27,9 @@ export default defineNuxtConfig({
     '@nuxt/scripts',
     'nuxt-vue3-google-signin',
   ],
+  hub: {
+    browser: true,
+  },
   supabase: {
     url: 'https://zgwgumfxsmuuhfjpltsr.supabase.co',
     // eslint-disable-next-line max-len

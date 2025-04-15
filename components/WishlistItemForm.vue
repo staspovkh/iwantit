@@ -17,7 +17,7 @@ const itemModel = reactive<WishlistItemData>({
   currency: '',
 })
 
-const updateModel = (newItem: WishlistItemData) => {
+const updateModel = (newItem: Partial<WishlistItemData>) => {
   itemUrl.value = newItem.link || ''
   itemModel.link = newItem.link ?? itemModel.link
   itemModel.name = newItem.name ?? itemModel.name
@@ -31,7 +31,7 @@ const updateModelFromUrl = async (url: string) => {
   itemLoading.value = true
   const item = await parseItem(url)
   if (item) {
-    updateModel({ ...item, name: item.name || '' })
+    updateModel(item)
   }
   itemLoading.value = false
 }
@@ -54,7 +54,7 @@ watch(
       placeholder="Enter page URL"
       class="grid grid-cols-[1fr_1.5rem] gap-2 mb-6"
       :value="itemUrl"
-      @update:value="itemUrl = $event"
+      @update:value="itemUrl = String($event)"
     >
       <Action
         icon="ic:outline-refresh"

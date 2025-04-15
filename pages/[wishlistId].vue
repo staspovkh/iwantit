@@ -52,7 +52,8 @@ const toggleSorting = async () => {
       nextTick(() => {
         useSortable(sortingEl, sortingItems, {
           ghostClass: 'opacity-50',
-          chosenClass: '-translate-y-1/6',
+          chosenClass: '',
+          animation: 300,
         })
       })
     }
@@ -67,47 +68,57 @@ definePageMeta({
   <div>
     <template v-if="wishlist">
       <h1 class="text-center text-2xl font-bold">{{ wishlist.name }}</h1>
-      <div class="col-span-full flex justify-center">
-        <Action button icon="ic:outline-plus" @click="openModal()">
-          add item
-        </Action>
-      </div>
-      <template v-if="wishlist.items.length">
+
+      <div class="flex gap-2 justify-end">
         <Action
-          :class="['rounded-sm', { 'bg-black text-white': sortingMode }]"
+          :class="[
+            'rounded-sm',
+            {
+              'bg-black text-white hover:bg-blue-500 hover:text-white':
+                sortingMode,
+            },
+          ]"
+          :disabled="!wishlist.items.length"
           icon="ic:outline-repeat"
+          title="Sort items"
           @click="toggleSorting()"
         />
-        <ul
-          v-if="sortingMode"
-          ref="sortingEl"
-          class="grid grid-cols-6 gap-4 mt-4 user-select-none"
+        <Action
+          :disabled="sortingMode"
+          icon="ic:outline-plus"
+          title="Add new item"
+          @click="openModal()"
+        />
+      </div>
+      <ul
+        v-if="sortingMode"
+        ref="sortingEl"
+        class="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-4 mt-4 user-select-none"
+      >
+        <li
+          v-for="item in sortingItems"
+          :key="item.id"
+          :class="[
+            'aspect-square border rounded-2xl shadow-md overflow-hidden cursor-pointer',
+            'transition-opacity duration-300',
+          ]"
         >
-          <li
-            v-for="item in sortingItems"
-            :key="item.id"
-            :class="[
-              'aspect-square rounded-2xl shadow-md overflow-hidden cursor-pointer',
-              'transition-all duration-300',
-            ]"
-          >
-            <NuxtImg class="w-full h-full object-cover" :src="item.picture" />
-          </li>
-        </ul>
-        <ul
-          v-else
-          class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4"
-        >
-          <li v-for="item in wishlist.items" :key="item.id">
-            <WishlistItem
-              :item="item"
-              :actions="wishlist.user === user?.id"
-              @edit="openModal(item)"
-              @remove="removeItem(item.id)"
-            />
-          </li>
-        </ul>
-      </template>
+          <NuxtImg class="w-full h-full object-cover" :src="item.picture" />
+        </li>
+      </ul>
+      <ul
+        v-else
+        class="grid grid-cols-[repeat(auto-fit,minmax(18rem,1fr))] gap-4 mt-4"
+      >
+        <li v-for="item in wishlist.items" :key="item.id">
+          <WishlistItem
+            :item="item"
+            :actions="wishlist.user === user?.id"
+            @edit="openModal(item)"
+            @remove="removeItem(item.id)"
+          />
+        </li>
+      </ul>
       <Modal title="Add wishlist item" :open="modalOpen" @close="closeModal()">
         <WishlistItemForm :item="itemToEdit" @submitted="submitModal($event)" />
       </Modal>

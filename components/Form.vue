@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import type { Input } from '#components'
-import type { Form } from '~/types'
+import type { Form, InputValue } from '~/types'
 
 import { useForm } from 'vee-validate'
 import { fields as fieldDefinitions } from '~/config/forms'
 
 const emit = defineEmits<{
-  submitted: [Record<string, string | boolean>]
-  'update:model': [Record<string, string | boolean>]
+  submitted: [Record<string, InputValue>]
+  'update:model': [Record<string, InputValue>]
 }>()
 const props = defineProps<Form>()
 
@@ -55,7 +55,7 @@ const ready = computed(() =>
 
 const validateForm = async () => (await validate()).valid
 
-const updateFormModel = (newValues: Record<string, string | boolean>) => {
+const updateFormModel = (newValues: Record<string, InputValue>) => {
   Object.keys(newValues).forEach((key) => {
     const val = values.value[key]
     if (typeof val !== 'undefined') {
@@ -77,7 +77,7 @@ watch(
         acc[key] = props.model[key]
         return acc
       },
-      {} as Record<string, string | boolean | undefined>,
+      {} as Record<string, InputValue | undefined>,
     )
   },
   (newValues, oldValues) => {

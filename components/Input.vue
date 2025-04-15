@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import type { InputText } from '~/types'
+import type { InputText, InputValue } from '~/types'
 
 const props = withDefaults(defineProps<InputText>(), {
   value: '',
 })
 const emit = defineEmits<{
   error: [string]
-  'update:value': [string]
-  'update:enter': [string]
+  'update:value': [InputValue]
+  'update:enter': [InputValue]
 }>()
 
 const {
@@ -45,7 +45,7 @@ watch(reactiveValue, () => {
 onActivated(() => {
   if (props.value !== reactiveValue.value) {
     skipWatcherOnce = true
-    reactiveValue.value = props.value
+    reactiveValue.value = String(props.value)
   }
 })
 
@@ -60,7 +60,7 @@ const onInput = (event: Event | string) => {
 
 const onAutofill = () => {
   if (computedValue.value) {
-    onChange(computedValue.value)
+    onChange(String(computedValue.value))
   }
 }
 
