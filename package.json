@@ -10,7 +10,8 @@
     "postinstall": "nuxt prepare",
     "docker:build": "docker build -t iwantit .",
     "docker:run": "docker run iwantit",
-    "docker:stop": "docker stop iwantit"
+    "docker:stop": "docker stop iwantit",
+    "supabase:types": "npx supabase gen types --lang=typescript --project-id zgwgumfxsmuuhfjpltsr > types/database.types.ts"
   },
   "dependencies": {
     "@nuxt/eslint": "^1.3.0",
@@ -36,6 +37,7 @@
   "devDependencies": {
     "eslint-config-prettier": "^10.1.2",
     "eslint-plugin-prettier": "^5.2.6",
-    "eslint-plugin-vue": "^10.0.0"
+    "eslint-plugin-vue": "^10.0.0",
+    "supabase": "^2.20.12"
   }
 }

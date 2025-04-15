@@ -5,7 +5,9 @@ const allowedRequests = ['/api/wishlist/get', '/api/wishlist/my']
 export default defineEventHandler(async (event) => {
   if (event.path.startsWith('/api/wishlist')) {
     const client = await serverSupabaseClient(event)
-    const user = (await client.auth.getUser()).data.user
+    const {
+      data: { user },
+    } = await client.auth.getUser()
     event.context.supabase = { client, user }
     if (!allowedRequests.includes(event.path) && !user) {
       throw createError({

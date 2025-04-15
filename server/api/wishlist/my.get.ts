@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-  if (event.context.supabase.user) {
+  if (event.context.supabase?.user) {
     const { data, error } = await event.context.supabase.client
       .from('wishlist')
       .select('id, name')
