@@ -6,6 +6,7 @@ const props = defineProps<{ item?: WishlistItemData }>()
 
 const { parseItem } = useWishlist('')
 
+const itemLoading = ref(false)
 const itemUrl = ref('')
 const itemModel = reactive<WishlistItemData>({
   link: '',
@@ -27,10 +28,12 @@ const updateModel = (newItem: WishlistItemData) => {
 }
 
 const updateModelFromUrl = async (url: string) => {
+  itemLoading.value = true
   const item = await parseItem(url)
   if (item) {
     updateModel({ ...item, name: item.name || '' })
   }
+  itemLoading.value = false
 }
 
 watch(
@@ -61,6 +64,12 @@ watch(
       />
     </Input>
     <Form
+      :class="[
+        'transition-opacity duration-300',
+        {
+          'opacity-30 pointer-events-none': itemLoading,
+        },
+      ]"
       :model="itemModel"
       name="wishlist-item"
       :button-label="item ? 'update wishlist item' : 'add wishlist item'"
