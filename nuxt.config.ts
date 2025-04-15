@@ -18,6 +18,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   modules: [
+    '@nuxthub/core',
     '@nuxtjs/supabase',
     '@nuxt/eslint',
     '@nuxt/fonts',
@@ -25,6 +26,7 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/scripts',
     'nuxt-vue3-google-signin',
+    '@nuxthub/core',
   ],
   supabase: {
     redirect: false,
@@ -40,6 +42,14 @@ export default defineNuxtConfig({
   googleSignIn: {
     clientId:
       '64929895773-qrit0c1f2rljcof7jjogb7ik6vg7gdjh.apps.googleusercontent.com',
+  },
+  runtimeConfig: {
+    public: {
+      supabase: {
+        url: process.env.SUPABASE_URL,
+        key: process.env.SUPABASE_KEY,
+      },
+    },
   },
   experimental: {
     defaults: {
