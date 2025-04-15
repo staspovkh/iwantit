@@ -42,6 +42,7 @@ export type Database = {
           id: string
           link: string | null
           name: string | null
+          order: number | null
           picture: Json[] | null
           price: number | null
           reserve: number | null
@@ -56,6 +57,7 @@ export type Database = {
           id?: string
           link?: string | null
           name?: string | null
+          order?: number | null
           picture?: Json[] | null
           price?: number | null
           reserve?: number | null
@@ -70,6 +72,7 @@ export type Database = {
           id?: string
           link?: string | null
           name?: string | null
+          order?: number | null
           picture?: Json[] | null
           price?: number | null
           reserve?: number | null

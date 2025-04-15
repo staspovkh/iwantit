@@ -1,4 +1,22 @@
-import type { Wishlist, WishlistItemData } from '~/types'
+import type { Wishlist, WishlistItem, WishlistItemData } from '~/types'
+import type { Tables } from '~/types/database.types'
+
+const transformItem = (
+  item: Partial<Tables<'wishlist_item'>>,
+): WishlistItem => ({
+  id: item.id ?? '',
+  name: item.name ?? '',
+  description: item.description ?? undefined,
+  picture:
+    Array.isArray(item.picture) && typeof item.picture[0] === 'string'
+      ? item.picture[0]
+      : undefined,
+  price: item.price?.toString() ?? undefined,
+  currency: item.currency ?? undefined,
+  link: item.link ?? undefined,
+  brand: item.brand ?? undefined,
+  order: item.order ?? 0,
+})
 
 export function useWishlist(wishlistId: string) {
   const loading = ref(false)
@@ -15,16 +33,7 @@ export function useWishlist(wishlistId: string) {
       wishlist.value = {
         id: wishlistId,
         name: result.payload.name,
-        items: result.payload.wishlist_item.map((item) => ({
-          id: item.id,
-          name: item.name,
-          description: item.description ?? undefined,
-          picture: item.picture?.[0],
-          price: item.price?.toString() ?? undefined,
-          currency: item.currency ?? undefined,
-          link: item.link ?? undefined,
-          brand: item.brand ?? undefined,
-        })),
+        items: result.payload.wishlist_item.map(transformItem),
         user: result.payload.user,
       }
     }
@@ -76,6 +85,36 @@ export function useWishlist(wishlistId: string) {
     }
   }
 
+  const sortItems = async (items: WishlistItem[], wait = false) => {
+    if (wishlist.value) {
+      const list = items
+        .map((item, order) => ({
+          id: item.id,
+          order,
+        }))
+        .filter((item) => items[item.order].order !== item.order)
+      if (list.length) {
+        wishlist.value = {
+          ...wishlist.value,
+          items,
+        }
+        loading.value = wait
+        await $fetch('/api/wishlistitem/sort', {
+          method: 'POST',
+          body: {
+            list: items
+              .map((item, order) => ({
+                id: item.id,
+                order,
+              }))
+              .filter((item) => items[item.order].order !== item.order),
+          },
+        })
+        loading.value = false
+      }
+    }
+  }
+
   return {
     loading,
     wishlist,
@@ -83,5 +122,6 @@ export function useWishlist(wishlistId: string) {
     addItem,
     removeItem,
     parseItem,
+    sortItems,
   }
 }

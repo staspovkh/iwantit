@@ -38,11 +38,11 @@ const getDescription = (html: HTMLElement, data?: Record<string, any>) => {
 }
 const getImage = (html: HTMLElement, data?: Record<string, any>) => {
   return (
-    data?.image ??
-    data?.thumbnailUrl ??
     getMetaContent(html, 'og:image') ??
     getMetaContent(html, 'twitter:image') ??
-    getMetaContent(html, 'image')
+    getMetaContent(html, 'image') ??
+    data?.image ??
+    data?.thumbnailUrl
   )
 }
 const getPrice = (html: HTMLElement, data?: Record<string, any>) => {

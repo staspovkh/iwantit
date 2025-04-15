@@ -17,6 +17,7 @@ export type WishlistItemData = {
 
 export type WishlistItem = WishlistItemData & {
   id: string
+  order?: number
 }
 
 export type Wishlist = {

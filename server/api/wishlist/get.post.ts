@@ -18,6 +18,7 @@ const payloadSchema = z.object({
       currency: z.string().nullish(),
       link: z.string().nullish(),
       brand: z.string().nullish(),
+      order: z.number().nullish(),
     }),
   ),
 })
@@ -27,9 +28,11 @@ export default defineEventHandler(async (event) => {
   const { data, error } = await event.context.supabase.client
     .from('wishlist')
     .select(
-      'user, name, public, wishlist_item (id, name, description, picture, price, currency, link, brand)',
+      'user, name, public, wishlist_item (id, name, description, picture, price, currency, link, brand, order)',
     )
     .eq('id', id)
+    .order('order', { ascending: true, referencedTable: 'wishlist_item' })
+    .order('created_at', { ascending: false, referencedTable: 'wishlist_item' })
     .single()
 
   if (

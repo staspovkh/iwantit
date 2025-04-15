@@ -6,9 +6,8 @@ const {
 } = useRoute<'wishlistId'>()
 
 const { user } = useUser()
-const { loading, wishlist, getWishlist, addItem, removeItem } = useWishlist(
-  String(wishlistId),
-)
+const { loading, wishlist, getWishlist, addItem, removeItem, sortItems } =
+  useWishlist(String(wishlistId))
 
 onMounted(() => {
   getWishlist()
@@ -35,6 +34,31 @@ const submitModal = async (item: WishlistItemData) => {
   closeModal()
 }
 
+const sortingMode = ref(false)
+const sortingEl = ref<HTMLElement | null>(null)
+const sortingItems = ref<WishlistItem[]>([])
+
+const toggleSorting = async () => {
+  if (sortingMode.value) {
+    sortItems(sortingItems.value)
+    nextTick(() => {
+      sortingMode.value = false
+      sortingItems.value = []
+    })
+  } else {
+    sortingItems.value = [...(wishlist.value?.items ?? [])]
+    sortingMode.value = true
+    if (sortingItems.value.length) {
+      nextTick(() => {
+        useSortable(sortingEl, sortingItems, {
+          ghostClass: 'opacity-50',
+          chosenClass: '-translate-y-1/6',
+        })
+      })
+    }
+  }
+}
+
 definePageMeta({
   keepalive: true,
 })
@@ -43,21 +67,47 @@ definePageMeta({
   <div>
     <template v-if="wishlist">
       <h1 class="text-center text-2xl font-bold">{{ wishlist.name }}</h1>
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-        <WishlistItem
-          v-for="item in wishlist.items"
-          :key="item.id"
-          :item="item"
-          :actions="wishlist.user === user?.id"
-          @edit="openModal(item)"
-          @remove="removeItem(item.id)"
-        />
-        <div class="col-span-full flex justify-center">
-          <Action button icon="ic:outline-plus" @click="openModal()">
-            add item
-          </Action>
-        </div>
+      <div class="col-span-full flex justify-center">
+        <Action button icon="ic:outline-plus" @click="openModal()">
+          add item
+        </Action>
       </div>
+      <template v-if="wishlist.items.length">
+        <Action
+          :class="['rounded-sm', { 'bg-black text-white': sortingMode }]"
+          icon="ic:outline-repeat"
+          @click="toggleSorting()"
+        />
+        <ul
+          v-if="sortingMode"
+          ref="sortingEl"
+          class="grid grid-cols-6 gap-4 mt-4 user-select-none"
+        >
+          <li
+            v-for="item in sortingItems"
+            :key="item.id"
+            :class="[
+              'aspect-square rounded-2xl shadow-md overflow-hidden cursor-pointer',
+              'transition-all duration-300',
+            ]"
+          >
+            <NuxtImg class="w-full h-full object-cover" :src="item.picture" />
+          </li>
+        </ul>
+        <ul
+          v-else
+          class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4"
+        >
+          <li v-for="item in wishlist.items" :key="item.id">
+            <WishlistItem
+              :item="item"
+              :actions="wishlist.user === user?.id"
+              @edit="openModal(item)"
+              @remove="removeItem(item.id)"
+            />
+          </li>
+        </ul>
+      </template>
       <Modal title="Add wishlist item" :open="modalOpen" @close="closeModal()">
         <WishlistItemForm :item="itemToEdit" @submitted="submitModal($event)" />
       </Modal>

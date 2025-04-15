@@ -13,7 +13,7 @@ defineProps<{ item: WishlistItem; actions?: boolean }>()
   >
     <Action
       v-if="item.picture"
-      class="aspect-[4/3] rounded-t-2xl overflow-hidden"
+      class="aspect-square rounded-t-2xl overflow-hidden"
       :to="item.link"
       :title="item.name"
       target="_blank"

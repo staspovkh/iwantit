@@ -26,7 +26,6 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/scripts',
     'nuxt-vue3-google-signin',
-    '@nuxthub/core',
   ],
   supabase: {
     url: 'https://zgwgumfxsmuuhfjpltsr.supabase.co',
