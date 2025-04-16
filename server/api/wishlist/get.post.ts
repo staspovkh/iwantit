@@ -15,7 +15,7 @@ const itemSchema = z.object({
   brand: z.string().nullable(),
   order: z.number().nullable(),
   reserve: z.number().nullable(),
-  tag: z.string().nullable(),
+  tag: z.array(z.string()).nullable(),
 })
 
 const payloadSchema = z.object({

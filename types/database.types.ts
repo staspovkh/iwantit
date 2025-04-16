@@ -46,7 +46,7 @@ export type Database = {
           picture: Json[] | null
           price: number | null
           reserve: number | null
-          tag: string | null
+          tag: string[] | null
           user: string
           wishlist: string
         }
@@ -62,7 +62,7 @@ export type Database = {
           picture?: Json[] | null
           price?: number | null
           reserve?: number | null
-          tag?: string | null
+          tag?: string[] | null
           user?: string
           wishlist?: string
         }
@@ -78,18 +78,11 @@ export type Database = {
           picture?: Json[] | null
           price?: number | null
           reserve?: number | null
-          tag?: string | null
+          tag?: string[] | null
           user?: string
           wishlist?: string
         }
         Relationships: [
-          {
-            foreignKeyName: 'wishlist_item_tag_fkey'
-            columns: ['tag']
-            isOneToOne: false
-            referencedRelation: 'wishlist_tag'
-            referencedColumns: ['id']
-          },
           {
             foreignKeyName: 'wishlist_item_wishlist_fkey'
             columns: ['wishlist']

@@ -7,6 +7,11 @@ export type User = {
   picture?: string
 }
 
+export type WishlistTag = {
+  id: string
+  name: string
+}
+
 export type WishlistItemRow = Omit<
   Tables<'wishlist_item'>,
   'created_at' | 'user'
@@ -14,6 +19,8 @@ export type WishlistItemRow = Omit<
 export type WishlistItemInsert = TablesInsert<'wishlist_item'>
 
 export type WishlistItemData = {
+  id?: string
+  wishlist?: string
   name?: string | null
   description?: string | null
   picture?: string | null
@@ -21,12 +28,13 @@ export type WishlistItemData = {
   currency?: string | null
   brand?: string | null
   link?: string | null
+  tag?: string[] | null
+  order?: number | null
 }
 
-export type WishlistItem = WishlistItemData & {
+export type WishlistItem = Omit<WishlistItemData, 'tag'> & {
   id: string
-  wishlist: string
-  order?: number | null
+  tag?: WishlistTag[] | null
 }
 
 export type Wishlist = {

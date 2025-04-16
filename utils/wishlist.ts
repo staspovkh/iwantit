@@ -1,4 +1,10 @@
-import type { WishlistItem, WishlistItemInsert, WishlistItemRow } from '~/types'
+import type {
+  WishlistItem,
+  WishlistItemData,
+  WishlistItemInsert,
+  WishlistItemRow,
+  WishlistTag,
+} from '~/types'
 
 export const wishlistItem2Insert = (
   item: Partial<WishlistItem>,
@@ -13,23 +19,37 @@ export const wishlistItem2Insert = (
   return rest
 }
 
-export const row2WishlistItem = (item: WishlistItemRow): WishlistItem => ({
+export const row2WishlistItem = (
+  item: WishlistItemRow,
+  tags?: WishlistTag[],
+): WishlistItem => ({
   ...item,
   picture:
     Array.isArray(item.picture) && typeof item.picture[0] === 'string'
       ? item.picture[0]
       : undefined,
   price: item.price?.toString(),
+  tag: item.tag?.map(
+    (id) => tags?.find((tag) => tag.id === id) ?? { id, name: '' },
+  ),
 })
 
 export const getWishlistItemUpdate = (
-  data: Partial<WishlistItem>,
+  data: WishlistItemData,
   item?: WishlistItem,
 ): Partial<WishlistItem> | undefined => {
   if (item) {
     const requiredKeys = ['id', 'wishlist']
     const result = (Object.keys(data) as (keyof typeof data)[])
-      .filter((key) => requiredKeys.includes(key) || data[key] !== item[key])
+      .filter((key) => {
+        if (key === 'tag') {
+          return !areArraysSimilar(
+            data.tag ?? undefined,
+            item.tag?.map((t) => t.name),
+          )
+        }
+        return requiredKeys.includes(key) || data[key] !== item[key]
+      })
       .reduce(
         (acc, key) => ({
           ...acc,

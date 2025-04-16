@@ -17,3 +17,12 @@ export const addEvListener = <T extends string>({
     target.removeEventListener(type, handler, options)
   }
 }
+
+export const areArraysSimilar = <T>(array1?: T[], array2?: T[]): boolean => {
+  return Boolean(
+    array1 &&
+      array2 &&
+      array1.length === array2.length &&
+      array1.every((value) => array2.includes(value)),
+  )
+}

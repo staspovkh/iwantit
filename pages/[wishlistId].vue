@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Tabs from '~/components/Tabs.vue'
 import type { WishlistItem, WishlistItemData } from '~/types'
 
 const {
@@ -6,8 +7,17 @@ const {
 } = useRoute<'wishlistId'>()
 
 const { user } = useUser()
-const { loading, wishlist, getWishlist, addItem, removeItem, sortItems } =
-  useWishlist(String(wishlistId))
+const {
+  loading,
+  wishlist,
+  categories,
+  items,
+  getWishlist,
+  addItem,
+  removeItem,
+  sortItems,
+  selectCategory,
+} = useWishlist(String(wishlistId))
 
 onMounted(() => {
   getWishlist()
@@ -38,15 +48,9 @@ const sortingMode = ref(false)
 const sortingEl = ref<HTMLElement | null>(null)
 const sortingItems = ref<WishlistItem[]>([])
 
-const toggleSorting = async () => {
-  if (sortingMode.value) {
-    sortItems(sortingItems.value)
-    nextTick(() => {
-      sortingMode.value = false
-      sortingItems.value = []
-    })
-  } else {
-    sortingItems.value = [...(wishlist.value?.items ?? [])]
+const toggleSorting = (enable?: boolean) => {
+  if (enable ?? !sortingMode.value) {
+    sortingItems.value = [...(items.value ?? [])]
     sortingMode.value = true
     if (sortingItems.value.length) {
       nextTick(() => {
@@ -57,8 +61,20 @@ const toggleSorting = async () => {
         })
       })
     }
+  } else {
+    sortItems(sortingItems.value)
+    nextTick(() => {
+      sortingMode.value = false
+      sortingItems.value = []
+    })
   }
 }
+
+watch(items, () => {
+  if (sortingMode.value) {
+    toggleSorting(true)
+  }
+})
 
 definePageMeta({
   keepalive: true,
@@ -88,6 +104,15 @@ definePageMeta({
           @click="openModal()"
         />
       </template>
+      <div
+        v-if="categories.length > 1"
+        class="flex items-center justify-center gap-4"
+      >
+        <Tabs
+          :names="categories.map((c) => c.name)"
+          @click="selectCategory(categories[$event].id)"
+        />
+      </div>
       <ul
         v-if="sortingMode"
         ref="sortingEl"
@@ -101,7 +126,11 @@ definePageMeta({
             'transition-opacity duration-300',
           ]"
         >
-          <NuxtImg class="w-full h-full object-cover" :src="item.picture" />
+          <NuxtImg
+            v-if="item.picture"
+            class="w-full h-full object-cover"
+            :src="item.picture"
+          />
         </li>
       </ul>
       <div
@@ -109,7 +138,7 @@ definePageMeta({
         class="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-4 mt-4"
       >
         <WishlistItem
-          v-for="item in wishlist.items"
+          v-for="item in items"
           :key="item.id"
           :item="item"
           :actions="wishlist.user === user?.id"

@@ -40,6 +40,12 @@ export const fields: Record<string, InputText> = {
     label: 'Brand',
     minlength: 2,
   },
+  tag: {
+    name: 'tag',
+    type: 'text',
+    label: 'Tag',
+    placeholder: 'tag1, tag2',
+  },
   link: {
     name: 'link',
     type: 'text',
