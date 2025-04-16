@@ -1,22 +1,4 @@
-import type { Wishlist, WishlistItem, WishlistItemData } from '~/types'
-import type { Tables } from '~/types/database.types'
-
-const transformItem = (
-  item: Partial<Tables<'wishlist_item'>>,
-): WishlistItem => ({
-  id: item.id ?? '',
-  name: item.name ?? '',
-  description: item.description ?? undefined,
-  picture:
-    Array.isArray(item.picture) && typeof item.picture[0] === 'string'
-      ? item.picture[0]
-      : undefined,
-  price: item.price?.toString() ?? undefined,
-  currency: item.currency ?? undefined,
-  link: item.link ?? undefined,
-  brand: item.brand ?? undefined,
-  order: item.order ?? 0,
-})
+import type { Wishlist, WishlistItem } from '~/types'
 
 export function useWishlist(wishlistId: string) {
   const loading = ref(false)
@@ -33,25 +15,36 @@ export function useWishlist(wishlistId: string) {
       wishlist.value = {
         id: wishlistId,
         name: result.payload.name,
-        items: result.payload.wishlist_item.map(transformItem),
+        items: result.payload.wishlist_item.map((item) =>
+          row2WishlistItem({
+            ...item,
+            wishlist: wishlistId,
+          }),
+        ),
         user: result.payload.user,
       }
     }
   }
 
-  const addItem = async (item: WishlistItemData & { id?: string }) => {
-    loading.value = true
-    const result = await $fetch('/api/wishlistitem/add', {
-      method: 'POST',
-      body: {
+  const addItem = async (item: Partial<WishlistItem>) => {
+    const data = getWishlistItemUpdate(
+      {
         ...item,
         wishlist: wishlistId,
       },
-    })
-    if (result.ok) {
-      await getWishlist()
+      item.id ? wishlist.value?.items.find((i) => i.id === item.id) : undefined,
+    )
+    if (data) {
+      loading.value = true
+      const result = await $fetch('/api/wishlistitem/add', {
+        method: 'POST',
+        body: wishlistItem2Insert(data),
+      })
+      if (result.ok) {
+        await getWishlist()
+      }
+      loading.value = false
     }
-    loading.value = false
   }
 
   const removeItem = async (id: string) => {
@@ -66,23 +59,6 @@ export function useWishlist(wishlistId: string) {
       await getWishlist()
     }
     loading.value = false
-  }
-
-  const parseItem = async (url: string) => {
-    loading.value = true
-    const result = await $fetch('/api/wishlistitem/parse', {
-      method: 'POST',
-      body: {
-        url,
-      },
-    })
-    loading.value = false
-    if (result.ok && result.payload) {
-      return {
-        ...result.payload,
-        link: url,
-      }
-    }
   }
 
   const sortItems = async (items: WishlistItem[], wait = false) => {
@@ -121,7 +97,6 @@ export function useWishlist(wishlistId: string) {
     getWishlist,
     addItem,
     removeItem,
-    parseItem,
     sortItems,
   }
 }

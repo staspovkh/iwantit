@@ -1,3 +1,5 @@
+import type { Tables, TablesInsert } from './database.types'
+
 export type User = {
   id: string
   email?: string
@@ -5,19 +7,26 @@ export type User = {
   picture?: string
 }
 
+export type WishlistItemRow = Omit<
+  Tables<'wishlist_item'>,
+  'created_at' | 'user'
+>
+export type WishlistItemInsert = TablesInsert<'wishlist_item'>
+
 export type WishlistItemData = {
-  name: string
-  description?: string
-  picture?: string
-  price?: string | number
-  currency?: string
-  brand?: string
-  link?: string
+  name?: string | null
+  description?: string | null
+  picture?: string | null
+  price?: string | null
+  currency?: string | null
+  brand?: string | null
+  link?: string | null
 }
 
 export type WishlistItem = WishlistItemData & {
   id: string
-  order?: number
+  wishlist: string
+  order?: number | null
 }
 
 export type Wishlist = {
@@ -30,14 +39,14 @@ export type Wishlist = {
 export interface Form {
   name: string
   model: {
-    [key: string]: string | number | boolean
+    [key: string]: string | boolean
   }
   id?: string
   buttonLabel?: string
   submitting?: boolean
 }
 
-export type InputValue = string | number | boolean
+export type InputValue = string | boolean
 
 export interface InputTemplate {
   name: string

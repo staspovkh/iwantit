@@ -2,6 +2,9 @@ import { z } from 'zod'
 import type { HTMLElement } from 'node-html-parser'
 import { parse } from 'node-html-parser'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type MetaRecord = Record<string, any>
+
 const bodySchema = z.object({
   url: z.string(),
 })
@@ -10,7 +13,7 @@ const payloadSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
   picture: z.string().optional(),
-  price: z.string().or(z.number()).optional(),
+  price: z.string().optional(),
   currency: z.string().optional(),
   brand: z.string().optional(),
   link: z.string().optional(),
@@ -37,7 +40,7 @@ const getItemProp = (html: HTMLElement, property: string) => {
   return itemProp?.getAttribute('content') ?? itemProp?.textContent
 }
 
-const getName = (html: HTMLElement, data?: Record<string, any>) => {
+const getName = (html: HTMLElement, data?: MetaRecord) => {
   return (
     data?.name ??
     data?.title ??
@@ -45,17 +48,17 @@ const getName = (html: HTMLElement, data?: Record<string, any>) => {
     getItemProp(html, 'name')
   )
 }
-const getDescription = (html: HTMLElement, data?: Record<string, any>) => {
+const getDescription = (html: HTMLElement, data?: MetaRecord) => {
   const description =
     data?.description ?? getMetaContent(html, 'og:description')
-  if (description) {
-    const match = description.match(/([^.!?]*[.!?]){1,3}/)
+  if (typeof description === 'string') {
+    const match = RegExp(/([^.!?]*[.!?]){1,3}/).exec(description)
     return match ? match[0].trim() : description.trim()
   }
 
   return undefined
 }
-const getImage = (html: HTMLElement, data?: Record<string, any>) => {
+const getImage = (html: HTMLElement, data?: MetaRecord) => {
   return (
     getMetaContent(html, 'og:image') ??
     getMetaContent(html, 'twitter:image') ??
@@ -65,7 +68,7 @@ const getImage = (html: HTMLElement, data?: Record<string, any>) => {
     getItemProp(html, 'image')
   )
 }
-const getPrice = (html: HTMLElement, data?: Record<string, any>) => {
+const getPrice = (html: HTMLElement, data?: MetaRecord) => {
   const price =
     data?.offers?.[0]?.price ??
     data?.offers?.price ??
@@ -76,7 +79,7 @@ const getPrice = (html: HTMLElement, data?: Record<string, any>) => {
     getItemProp(html, 'price')
   return price ? String(price) : undefined
 }
-const getCurrency = (html: HTMLElement, data?: Record<string, any>) => {
+const getCurrency = (html: HTMLElement, data?: MetaRecord) => {
   return (
     data?.offers?.[0]?.priceCurrency ??
     data?.offers?.priceCurrency ??
@@ -87,7 +90,7 @@ const getCurrency = (html: HTMLElement, data?: Record<string, any>) => {
     getItemProp(html, 'priceCurrency')
   )
 }
-const getBrand = (html: HTMLElement, data?: Record<string, any>) => {
+const getBrand = (html: HTMLElement, data?: MetaRecord) => {
   return (
     data?.brand?.name ??
     data?.brand ??
@@ -120,7 +123,9 @@ export default defineEventHandler(async (event) => {
   const { url } = await readValidatedBody(event, bodySchema.parse)
   const result = (await fetchPageHTML(url)) ?? (await scrapPageHTML(url))
   if (typeof result === 'string') {
-    const html = parse(result)
+    const html = parse(result, {
+      parseNoneClosedTags: true,
+    })
     const data = html
       .querySelectorAll('script[type="application/ld+json"]')
       ?.map((el) => jsonParse(el.innerHTML))

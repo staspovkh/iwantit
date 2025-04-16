@@ -29,7 +29,7 @@ const updateModel = (newItem: Partial<WishlistItemData>) => {
 
 const updateModelFromUrl = async (url: string) => {
   itemLoading.value = true
-  const item = await parseItem(url)
+  const item = await parseWishlistItem(url)
   if (item) {
     updateModel(item)
   }

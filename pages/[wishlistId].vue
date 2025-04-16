@@ -66,10 +66,8 @@ definePageMeta({
 </script>
 <template>
   <div>
-    <template v-if="wishlist">
-      <h1 class="text-center text-2xl font-bold">{{ wishlist.name }}</h1>
-
-      <div class="flex gap-2 justify-end">
+    <WishlistLayout v-if="wishlist" :title="wishlist.name" :loading="loading">
+      <template #actions>
         <Action
           :class="[
             'rounded-sm',
@@ -78,7 +76,7 @@ definePageMeta({
                 sortingMode,
             },
           ]"
-          :disabled="!wishlist.items.length"
+          :disabled="wishlist.items.length < 2"
           icon="ic:outline-repeat"
           title="Sort items"
           @click="toggleSorting()"
@@ -89,11 +87,11 @@ definePageMeta({
           title="Add new item"
           @click="openModal()"
         />
-      </div>
+      </template>
       <ul
         v-if="sortingMode"
         ref="sortingEl"
-        class="grid grid-cols-[repeat(auto-fit,minmax(9rem,1fr))] gap-4 mt-4 user-select-none"
+        class="grid grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] gap-4 mt-4 user-select-none"
       >
         <li
           v-for="item in sortingItems"
@@ -106,23 +104,22 @@ definePageMeta({
           <NuxtImg class="w-full h-full object-cover" :src="item.picture" />
         </li>
       </ul>
-      <ul
+      <div
         v-else
-        class="grid grid-cols-[repeat(auto-fit,minmax(18rem,1fr))] gap-4 mt-4"
+        class="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-4 mt-4"
       >
-        <li v-for="item in wishlist.items" :key="item.id">
-          <WishlistItem
-            :item="item"
-            :actions="wishlist.user === user?.id"
-            @edit="openModal(item)"
-            @remove="removeItem(item.id)"
-          />
-        </li>
-      </ul>
+        <WishlistItem
+          v-for="item in wishlist.items"
+          :key="item.id"
+          :item="item"
+          :actions="wishlist.user === user?.id"
+          @edit="openModal(item)"
+          @remove="removeItem(item.id)"
+        />
+      </div>
       <Modal title="Add wishlist item" :open="modalOpen" @close="closeModal()">
         <WishlistItemForm :item="itemToEdit" @submitted="submitModal($event)" />
       </Modal>
-      <Spinner :loading="loading" />
-    </template>
+    </WishlistLayout>
   </div>
 </template>
