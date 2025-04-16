@@ -30,8 +30,20 @@ const getMetaContent = (html: HTMLElement, property: string) => {
     ?.getAttribute('content')
 }
 
+const getItemProp = (html: HTMLElement, property: string) => {
+  const itemProp = html.querySelector(
+    `[itemtype="https://schema.org/Product"] [itemprop="${property}"]`,
+  )
+  return itemProp?.getAttribute('content') ?? itemProp?.textContent
+}
+
 const getName = (html: HTMLElement, data?: Record<string, any>) => {
-  return data?.name ?? data?.title ?? getMetaContent(html, 'og:title')
+  return (
+    data?.name ??
+    data?.title ??
+    getMetaContent(html, 'og:title') ??
+    getItemProp(html, 'name')
+  )
 }
 const getDescription = (html: HTMLElement, data?: Record<string, any>) => {
   const description =
@@ -49,7 +61,8 @@ const getImage = (html: HTMLElement, data?: Record<string, any>) => {
     getMetaContent(html, 'twitter:image') ??
     getMetaContent(html, 'image') ??
     data?.image ??
-    data?.thumbnailUrl
+    data?.thumbnailUrl ??
+    getItemProp(html, 'image')
   )
 }
 const getPrice = (html: HTMLElement, data?: Record<string, any>) => {
@@ -59,7 +72,8 @@ const getPrice = (html: HTMLElement, data?: Record<string, any>) => {
     getMetaContent(html, 'product:price:amount') ??
     getMetaContent(html, 'product:price') ??
     getMetaContent(html, 'og:price:amount') ??
-    getMetaContent(html, 'og:price')
+    getMetaContent(html, 'og:price') ??
+    getItemProp(html, 'price')
   return price ? String(price) : undefined
 }
 const getCurrency = (html: HTMLElement, data?: Record<string, any>) => {
@@ -69,7 +83,8 @@ const getCurrency = (html: HTMLElement, data?: Record<string, any>) => {
     getMetaContent(html, 'product:price:currency') ??
     getMetaContent(html, 'product:currency') ??
     getMetaContent(html, 'og:price:currency') ??
-    getMetaContent(html, 'og:currency')
+    getMetaContent(html, 'og:currency') ??
+    getItemProp(html, 'priceCurrency')
   )
 }
 const getBrand = (html: HTMLElement, data?: Record<string, any>) => {
@@ -79,7 +94,8 @@ const getBrand = (html: HTMLElement, data?: Record<string, any>) => {
     getMetaContent(html, 'product:brand') ??
     getMetaContent(html, 'og:brand') ??
     getMetaContent(html, 'twitter:brand') ??
-    getMetaContent(html, 'brand')
+    getMetaContent(html, 'brand') ??
+    getItemProp(html, 'brand')
   )
 }
 
@@ -108,7 +124,11 @@ export default defineEventHandler(async (event) => {
     const data = html
       .querySelectorAll('script[type="application/ld+json"]')
       ?.map((el) => jsonParse(el.innerHTML))
-      .find((item) => item['@type'] === 'Product')
+      .find((item) =>
+        Array.isArray(item['@type'])
+          ? item['@type'].includes('Product')
+          : item['@type'] === 'Product',
+      )
 
     const payload = payloadSchema.parse({
       name: getName(html, data),
