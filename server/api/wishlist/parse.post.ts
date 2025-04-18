@@ -32,7 +32,6 @@ const getMetaContent = (html: HTMLElement, property: string) => {
     .querySelector(`meta[property="${property}"]`)
     ?.getAttribute('content')
 }
-
 const getItemProp = (html: HTMLElement, property: string) => {
   const itemProp = html.querySelector(
     `[itemtype="https://schema.org/Product"] [itemprop="${property}"]`,
@@ -114,14 +113,18 @@ const fetchPageHTML = async (url: string) => {
 
 const scrapPageHTML = async (url: string) => {
   const { page } = await hubBrowser()
-  await page.goto(url, { waitUntil: 'networkidle0' })
+  await page.setJavaScriptEnabled(true)
+  // await page.setBypassCSP(true)
+  // await page.setBypassServiceWorker(true)
+  await page.setViewport({ width: 1920, height: 1080 })
+  await page.goto(url)
   const result = await page.content()
   return result
 }
 
 export default defineEventHandler(async (event) => {
   const { url } = await readValidatedBody(event, bodySchema.parse)
-  const result = (await fetchPageHTML(url)) ?? (await scrapPageHTML(url))
+  const result = await scrapPageHTML(url)
   if (typeof result === 'string') {
     const html = parse(result, {
       parseNoneClosedTags: true,
