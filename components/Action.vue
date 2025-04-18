@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const props = defineProps<{
-  to?: string
+  to?: string | null
   icon?: string
   button?: boolean
   secondary?: boolean
@@ -18,7 +18,7 @@ const primary = computed(() => !props.secondary)
       'cursor-pointer flex items-center justify-center gap-2 transition-all duration-300',
       'disabled:pointer-events-none',
       {
-        'hover:text-blue-500 disabled:opacity-50': !button,
+        'hover:text-blue-500 disabled:opacity-30': !button,
         'py-1.5 px-5.5 min-h-[3rem] rounded-lg': button,
         'font-bold text-base/none tracking-wide text-center': button,
         'bg-green-800 text-white': button && primary,

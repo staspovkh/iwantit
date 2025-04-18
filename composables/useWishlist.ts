@@ -1,119 +1,51 @@
-import type {
-  Wishlist,
-  WishlistItem,
-  WishlistItemData,
-  WishlistTag,
-} from '~/types'
+import type { Wishlist, WishlistItem } from '~/types/entities'
+
+type WishlistExt = Wishlist & {
+  item?: WishlistItem[]
+}
 
 export function useWishlist(wishlistId: string) {
-  const { user } = useUser()
-  const loading = ref(false)
-  const wishlist = ref<Wishlist>()
-  const tags = useState<WishlistTag[]>(
-    `wishlist-tags-${user.value?.id ?? wishlistId}`,
-    () => [],
+  const {
+    loading: wishlistLoading,
+    entity: wishlist,
+    get: getWishlistEntity,
+  } = useEntity<WishlistExt>('wishlist', wishlistId, ['item'])
+
+  const { loading: tagsLoading, tags, getTags } = useTags()
+
+  const getWishlist = async (force?: boolean) => {
+    await Promise.all([getWishlistEntity(force), getTags(force)])
+  }
+
+  const {
+    loading: itemLoading,
+    entities: wishlistItems,
+    add: addItemEntity,
+    remove: removeItem,
+    sort: sortItems,
+  } = useEntities<WishlistItem>(
+    'item',
+    computed(
+      () =>
+        wishlist.value?.item?.map((item) => ({
+          ...item,
+          tag: item.tag
+            ?.map((id) => tags.value.find((t) => t.id === id)?.name ?? '')
+            .filter(Boolean),
+        })) ?? [],
+    ),
+    {
+      key: wishlistId,
+      callback: getWishlist,
+    },
   )
 
-  const getWishlist = async () => {
-    const [result, tagsResult] = await Promise.all([
-      await $fetch('/api/wishlist/get', {
-        method: 'POST',
-        body: {
-          id: wishlistId,
-        },
-      }),
-      await $fetch('/api/wishlisttag/my'),
-    ])
-    if (tagsResult.ok && tagsResult.payload) {
-      tags.value = tagsResult.payload
-    }
-    if (result.ok && result.payload) {
-      wishlist.value = {
-        id: wishlistId,
-        name: result.payload.name,
-        items: result.payload.wishlist_item.map((item) =>
-          row2WishlistItem(
-            {
-              ...item,
-              wishlist: wishlistId,
-            },
-            tags.value,
-          ),
-        ),
-        user: result.payload.user,
-      }
-    }
-  }
+  const loading = computed(
+    () => wishlistLoading.value || tagsLoading.value || itemLoading.value,
+  )
 
-  const addItem = async (item: Partial<WishlistItemData>) => {
-    const data = getWishlistItemUpdate(
-      {
-        ...item,
-        wishlist: wishlistId,
-      },
-      item.id ? wishlist.value?.items.find((i) => i.id === item.id) : undefined,
-    )
-    if (data) {
-      loading.value = true
-      const result = await $fetch('/api/wishlistitem/add', {
-        method: 'POST',
-        body: wishlistItem2Insert(data),
-      })
-      if (result.ok) {
-        await getWishlist()
-      }
-      loading.value = false
-    }
-  }
-
-  const removeItem = async (id: string) => {
-    loading.value = true
-    const result = await $fetch('/api/wishlistitem/remove', {
-      method: 'POST',
-      body: {
-        id,
-      },
-    })
-    if (result.ok) {
-      await getWishlist()
-    }
-    loading.value = false
-  }
-
-  const sortItems = async (items: WishlistItem[], wait = false) => {
-    if (wishlist.value) {
-      const list = items
-        .map((item, order) => ({
-          id: item.id,
-          order,
-        }))
-        .filter((item) => items[item.order].order !== item.order)
-      if (list.length) {
-        wishlist.value = {
-          ...wishlist.value,
-          items: wishlist.value.items
-            .map((item) => ({
-              ...item,
-              order:
-                list.find((i) => i.id === item.id)?.order ?? item.order ?? 0,
-            }))
-            .sort((a, b) => a.order - b.order),
-        }
-        loading.value = wait
-        await $fetch('/api/wishlistitem/sort', {
-          method: 'POST',
-          body: {
-            list: items
-              .map((item, order) => ({
-                id: item.id,
-                order,
-              }))
-              .filter((item) => items[item.order].order !== item.order),
-          },
-        })
-        loading.value = false
-      }
-    }
+  const addItem = async (item: Partial<WishlistItem>) => {
+    await addItemEntity({ ...item, wishlist: wishlistId })
   }
 
   const categoryId = ref<string | undefined>()
@@ -124,8 +56,8 @@ export function useWishlist(wishlistId: string) {
         name: 'All',
       },
       ...tags.value.filter((tag) =>
-        wishlist.value?.items.some((item) =>
-          item.tag?.some((t) => t.id === tag.id),
+        wishlistItems.value.some((item) =>
+          item.tag?.some((tagName) => tagName === tag.name),
         ),
       ),
     ].map((category) => ({
@@ -135,12 +67,13 @@ export function useWishlist(wishlistId: string) {
   )
   const items = computed(() => {
     if (!categoryId.value) {
-      return wishlist.value?.items ?? []
+      return wishlistItems.value
     }
-    return (
-      wishlist.value?.items.filter((item) =>
-        item.tag?.find((t) => t.id === categoryId.value),
-      ) ?? []
+    const categoryName = tags.value.find(
+      (tag) => tag.id === categoryId.value,
+    )?.name
+    return wishlistItems.value.filter((item) =>
+      item.tag?.find((tagName) => tagName === categoryName),
     )
   })
   const selectCategory = (id?: string) => {

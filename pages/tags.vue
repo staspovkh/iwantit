@@ -1,49 +1,42 @@
 <script setup lang="ts">
-import type { Wishlist } from '~/types/entities'
+import type { WishlistTag } from '~/types/entities'
 
 const { user } = useUser()
-const {
-  loading,
-  wishlists,
-  getWishlists,
-  addWishlist,
-  removeWishlist,
-  sortWishlists,
-} = useWishlists()
+const { loading, tags, getTags, addTag, removeTag, sortTags } = useTags()
 
 const modalOpen = ref(false)
-const wishlistToEdit = ref<Wishlist | undefined>()
+const tagToEdit = ref<WishlistTag | undefined>()
 
-const openModal = (item?: Wishlist) => {
+const openModal = (tag?: WishlistTag) => {
   modalOpen.value = true
-  wishlistToEdit.value = item
+  tagToEdit.value = tag
 }
 
 const closeModal = () => {
   modalOpen.value = false
-  wishlistToEdit.value = undefined
+  tagToEdit.value = undefined
 }
 
-const submitModal = async (item: Partial<Wishlist>) => {
-  await addWishlist({
+const submitModal = async (item: Partial<WishlistTag>) => {
+  await addTag({
     ...item,
-    id: wishlistToEdit.value?.id,
+    id: tagToEdit.value?.id,
   })
   closeModal()
 }
 
-watch(user, () => getWishlists())
+watch(user, () => getTags())
 onMounted(() => {
-  getWishlists()
+  getTags()
 })
 
 const sortingMode = ref(false)
 const sortingEl = ref<HTMLElement | null>(null)
-const sortingItems = ref<Wishlist[]>([])
+const sortingItems = ref<WishlistTag[]>([])
 
 const toggleSorting = (enable?: boolean) => {
   if (enable ?? !sortingMode.value) {
-    sortingItems.value = [...(wishlists.value ?? [])]
+    sortingItems.value = [...(tags.value ?? [])]
     sortingMode.value = true
     if (sortingItems.value.length) {
       nextTick(() => {
@@ -55,7 +48,7 @@ const toggleSorting = (enable?: boolean) => {
       })
     }
   } else {
-    sortWishlists(sortingItems.value)
+    sortTags(sortingItems.value)
     nextTick(() => {
       sortingMode.value = false
       sortingItems.value = []
@@ -69,9 +62,8 @@ definePageMeta({
 </script>
 <template>
   <div>
-    <WishlistLayout v-if="user" :title="'Wish lists'" :loading="loading">
+    <WishlistLayout v-if="user" :title="'Tags'" :loading="loading">
       <template #actions>
-        <Action icon="ic:outline-bookmark-border" :to="`/tags`" />
         <Action
           :class="[
             'rounded-sm',
@@ -80,7 +72,7 @@ definePageMeta({
                 sortingMode,
             },
           ]"
-          :disabled="wishlists.length < 2"
+          :disabled="tags.length < 2"
           icon="ic:outline-repeat"
           title="Sort tags"
           @click="toggleSorting()"
@@ -92,13 +84,13 @@ definePageMeta({
         />
       </template>
       <ul
-        v-if="wishlists.length"
+        v-if="tags.length"
         ref="sortingEl"
-        class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4"
+        class="flex flex-wrap justify-center gap-4 mt-4"
       >
         <li
-          v-for="wishlist in sortingMode ? sortingItems : wishlists"
-          :key="wishlist.id"
+          v-for="tag in sortingMode ? sortingItems : tags"
+          :key="tag.id"
           :class="[
             'tile flex items-center justify-between gap-1 font-bold',
             {
@@ -106,30 +98,23 @@ definePageMeta({
             },
           ]"
         >
-          <Action
-            :class="['mr-auto', { 'pointer-events-none': sortingMode }]"
-            :to="`/${wishlist.id}`"
-            >{{ wishlist.name }}</Action
-          >
+          <span class="mr-auto pl-1 pr-2">{{ tag.name }}</span>
           <Action
             icon="ic:outline-delete-forever"
             title="Remove"
             :disabled="sortingMode"
-            @click="!sortingMode && removeWishlist(wishlist.id)"
+            @click="!sortingMode && removeTag(tag.id)"
           />
           <Action
             icon="ic:outline-edit"
             title="Edit"
             :disabled="sortingMode"
-            @click="!sortingMode && openModal(wishlist)"
+            @click="!sortingMode && openModal(tag)"
           />
         </li>
       </ul>
-      <Modal title="Add wishlist" :open="modalOpen" @close="closeModal()">
-        <WishlistForm
-          :wishlist="wishlistToEdit"
-          @submitted="submitModal($event)"
-        />
+      <Modal title="Add tag" :open="modalOpen" @close="modalOpen = false">
+        <WishlistTagForm :tag="tagToEdit" @submitted="submitModal($event)" />
       </Modal>
     </WishlistLayout>
   </div>

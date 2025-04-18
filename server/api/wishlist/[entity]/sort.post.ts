@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import type { Tables } from '~/types/database.types'
+import { entityTables, entityTypeSchema } from '~/types/entities'
 
 const bodySchema = z.object({
   list: z.array(
@@ -11,22 +11,20 @@ const bodySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
+  const entity = entityTypeSchema.parse(event.context.params?.entity)
   const { list } = await readValidatedBody(event, bodySchema.parse)
 
-  const { data, error } = await event.context.supabase.client
-    .from('wishlist_item')
+  const { error } = await event.context.supabase.client
+    .from(entityTables[entity])
     .upsert(list)
-    .select()
 
   if (error) {
     return {
       ok: false,
-      payload: null,
     }
   }
 
   return {
     ok: true,
-    payload: data as Tables<'wishlist_item'>[],
   }
 })

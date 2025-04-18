@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { WishlistItem, WishlistItemData } from '~/types'
+import type { WishlistItem } from '~/types/entities'
 
-const emit = defineEmits<{ submitted: [WishlistItemData] }>()
+const emit = defineEmits<{ submitted: [Partial<WishlistItem>] }>()
 const props = defineProps<{ item?: WishlistItem }>()
 
 const itemLoading = ref(false)
@@ -21,14 +21,10 @@ const updateModel = (newItem: Partial<WishlistItem>) => {
   itemModel.link = newItem.link ?? itemModel.link
   itemModel.name = newItem.name ?? itemModel.name
   itemModel.description = newItem.description ?? itemModel.description
-  itemModel.picture = newItem.picture ?? itemModel.picture
-  itemModel.price = newItem.price ?? itemModel.price
+  itemModel.picture = newItem.picture?.[0] ?? itemModel.picture
+  itemModel.price = newItem.price?.toString() ?? itemModel.price
   itemModel.currency = newItem.currency ?? itemModel.currency
-  itemModel.tag =
-    newItem.tag
-      ?.map((t) => t.name)
-      .filter(Boolean)
-      .join(', ') ?? itemModel.tag
+  itemModel.tag = newItem.tag?.filter(Boolean).join(', ') ?? itemModel.tag
 }
 
 const updateModelFromUrl = async (url: string) => {
@@ -44,6 +40,8 @@ const submitForm = (data: typeof itemModel) => {
   const formData = {
     ...data,
     link: itemUrl.value,
+    picture: data.picture ? [data.picture] : undefined,
+    price: data.price ? Number(data.price) : undefined,
     tag: data.tag.split(',').map((tag) => tag.trim()),
   }
   emit('submitted', formData)

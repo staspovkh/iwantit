@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { WishlistItem } from '~/types'
+import type { WishlistItem } from '~/types/entities'
 
 defineEmits<{ remove: []; edit: [] }>()
 defineProps<{ item: WishlistItem; actions?: boolean }>()
@@ -12,14 +12,14 @@ defineProps<{ item: WishlistItem; actions?: boolean }>()
     ]"
   >
     <Action
-      v-if="item.picture"
+      v-if="item.picture?.[0]"
       class="aspect-square rounded-t-2xl overflow-hidden"
       :to="item.link"
       :title="item.name"
       target="_blank"
       rel="noopener noreferrer"
     >
-      <NuxtImg class="w-full h-full object-cover" :src="item.picture" />
+      <NuxtImg class="w-full h-full object-cover" :src="item.picture[0]" />
     </Action>
     <div class="p-4">
       <div class="flex items-start justify-between gap-2">

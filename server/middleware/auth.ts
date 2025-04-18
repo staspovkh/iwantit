@@ -1,6 +1,10 @@
 import { serverSupabaseClient } from '#supabase/server'
 
-const allowedRequests = ['/api/wishlist/get', '/api/wishlist/my']
+const allowedRequests = [
+  '/api/wishlist/wishlist/get',
+  '/api/wishlist/wishlist/my',
+  '/api/wishlist/tags/my',
+]
 
 export default defineEventHandler(async (event) => {
   if (event.path.startsWith('/api/wishlist')) {

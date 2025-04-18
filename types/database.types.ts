@@ -14,6 +14,7 @@ export type Database = {
           created_at: string
           id: string
           name: string | null
+          order: number
           public: boolean
           user: string | null
         }
@@ -21,6 +22,7 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string | null
+          order?: number
           public?: boolean
           user?: string | null
         }
@@ -28,6 +30,7 @@ export type Database = {
           created_at?: string
           id?: string
           name?: string | null
+          order?: number
           public?: boolean
           user?: string | null
         }
@@ -97,18 +100,21 @@ export type Database = {
           created_at: string
           id: string
           name: string | null
+          order: number
           user: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           name?: string | null
+          order?: number
           user?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           name?: string | null
+          order?: number
           user?: string | null
         }
         Relationships: []

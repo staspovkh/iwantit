@@ -12,8 +12,8 @@ const bodySchema = z.object({
 const payloadSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
-  picture: z.string().optional(),
-  price: z.string().optional(),
+  picture: z.array(z.string()).optional(),
+  price: z.number().optional(),
   currency: z.string().optional(),
   brand: z.string().optional(),
   link: z.string().optional(),
@@ -77,7 +77,7 @@ const getPrice = (html: HTMLElement, data?: MetaRecord) => {
     getMetaContent(html, 'og:price:amount') ??
     getMetaContent(html, 'og:price') ??
     getItemProp(html, 'price')
-  return price ? String(price) : undefined
+  return price ? Number(price) : undefined
 }
 const getCurrency = (html: HTMLElement, data?: MetaRecord) => {
   return (
@@ -135,10 +135,12 @@ export default defineEventHandler(async (event) => {
           : item['@type'] === 'Product',
       )
 
+    const image = getImage(html, data)
+
     const payload = payloadSchema.parse({
       name: getName(html, data),
       description: getDescription(html, data),
-      picture: getImage(html, data),
+      picture: image ? [image] : undefined,
       price: getPrice(html, data),
       currency: getCurrency(html, data),
       brand: getBrand(html, data),

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Tabs from '~/components/Tabs.vue'
-import type { WishlistItem, WishlistItemData } from '~/types'
+import type { WishlistItem } from '~/types/entities'
 
 const {
   params: { wishlistId },
@@ -36,7 +36,7 @@ const closeModal = () => {
   itemToEdit.value = undefined
 }
 
-const submitModal = async (item: WishlistItemData) => {
+const submitModal = async (item: Partial<WishlistItem>) => {
   await addItem({
     ...item,
     id: itemToEdit.value?.id,
@@ -78,6 +78,9 @@ watch(items, () => {
 
 definePageMeta({
   keepalive: true,
+  key(route) {
+    return route.fullPath
+  },
 })
 </script>
 <template>
@@ -92,7 +95,7 @@ definePageMeta({
                 sortingMode,
             },
           ]"
-          :disabled="wishlist.items.length < 2"
+          :disabled="items.length < 2"
           icon="ic:outline-repeat"
           title="Sort items"
           @click="toggleSorting()"
@@ -127,9 +130,9 @@ definePageMeta({
           ]"
         >
           <NuxtImg
-            v-if="item.picture"
+            v-if="item.picture?.[0]"
             class="w-full h-full object-cover"
-            :src="item.picture"
+            :src="item.picture[0]"
           />
         </li>
       </ul>
