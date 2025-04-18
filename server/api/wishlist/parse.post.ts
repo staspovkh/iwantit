@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import type { HTMLElement } from 'node-html-parser'
 import { parse } from 'node-html-parser'
+import { Browser, Builder } from 'selenium-webdriver'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type MetaRecord = Record<string, any>
@@ -112,13 +113,14 @@ const fetchPageHTML = async (url: string) => {
 }
 
 const scrapPageHTML = async (url: string) => {
-  const { page } = await hubBrowser()
-  await page.setJavaScriptEnabled(true)
-  // await page.setBypassCSP(true)
-  // await page.setBypassServiceWorker(true)
-  await page.setViewport({ width: 1920, height: 1080 })
-  await page.goto(url)
-  const result = await page.content()
+  const driver = await new Builder().forBrowser(Browser.CHROME).build()
+  let result = ''
+  try {
+    await driver.get(url)
+    result = await driver.getPageSource()
+  } finally {
+    await driver.quit()
+  }
   return result
 }
 
