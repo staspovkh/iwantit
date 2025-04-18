@@ -125,7 +125,7 @@ defineExpose({
     @submit.prevent="handleSubmit()"
     @reset.prevent="resetForm()"
   >
-    <Input
+    <FormField
       v-for="field in fields"
       :key="field.name"
       v-bind="field"

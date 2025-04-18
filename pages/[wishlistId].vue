@@ -19,8 +19,15 @@ const {
   selectCategory,
 } = useWishlist(String(wishlistId))
 
-onMounted(() => {
-  getWishlist()
+onMounted(async () => {
+  await getWishlist()
+  if (!wishlist.value) {
+    return navigateTo({ name: 'index' })
+  }
+})
+
+const isOwner = computed(() => {
+  return wishlist.value?.user === user.value?.id
 })
 
 const modalOpen = ref(false)
@@ -86,7 +93,7 @@ definePageMeta({
 <template>
   <div>
     <WishlistLayout v-if="wishlist" :title="wishlist.name" :loading="loading">
-      <template #actions>
+      <template v-if="isOwner" #actions>
         <Action
           :class="[
             'rounded-sm',
@@ -144,7 +151,7 @@ definePageMeta({
           v-for="item in items"
           :key="item.id"
           :item="item"
-          :actions="wishlist.user === user?.id"
+          :actions="isOwner"
           @edit="openModal(item)"
           @remove="removeItem(item.id)"
         />

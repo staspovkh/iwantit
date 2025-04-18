@@ -8,7 +8,7 @@ export type User = {
 export interface Form {
   name: string
   model: {
-    [key: string]: string | boolean
+    [key: string]: string | boolean | number | null
   }
   id?: string
   buttonLabel?: string
@@ -18,19 +18,6 @@ export interface Form {
 export type InputValue = string | boolean
 
 export interface InputTemplate {
-  name: string
-  id?: string
-  fieldId?: string
-  label?: string
-  caption?: string
-  required?: boolean
-  disabled?: boolean
-  error?: boolean
-  errorMessage?: string
-  inputSize?: 'small' | 'medium' | 'tiny'
-}
-
-export interface InputText extends InputTemplate {
   type:
     | 'textarea'
     | 'text'
@@ -41,11 +28,30 @@ export interface InputText extends InputTemplate {
     | 'tel'
     | 'checkbox'
     | 'radio'
-  value?: InputValue
-  placeholder?: string
+    | 'select'
+  name: string
+  id?: string
   min?: string
   max?: string
   minlength?: number
   maxlength?: number
   pattern?: string
+  caption?: string
+  required?: boolean
+  disabled?: boolean
+
+  fieldId?: string
+  label?: string
+  error?: boolean
+  errorMessage?: string
+  inputSize?: 'small' | 'medium' | 'tiny'
+}
+
+export interface InputText extends InputTemplate {
+  value?: string
+  placeholder?: string
+}
+
+export interface InputCheckbox extends InputTemplate {
+  value?: boolean
 }

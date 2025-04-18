@@ -28,7 +28,7 @@ export type WishlistItem = z.infer<typeof itemSchema>
 
 const tagSchema = z.object({
   id: z.string(),
-  name: z.string(),
+  name: z.string().nullish(),
   order: z.number().nullish(),
 })
 export type WishlistTag = z.infer<typeof tagSchema>

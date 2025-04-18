@@ -10,34 +10,45 @@ import {
 const getEntitySchema = (type: EntityType) =>
   entityPayloadSchema.shape[type].element
 
+const getAllBodySchema = z.object({
+  ids: z.array(z.string()).optional(),
+  filters: z
+    .array(z.tuple([z.string(), z.enum(['in', 'eq']), z.unknown()]))
+    .optional(),
+})
+
 export const getEntities = async (
   event: H3Event,
   type?: string,
-  filters?: Array<[string, 'in' | 'eq', unknown]>,
+  body?: unknown,
 ) => {
-  if (event.context.supabase?.user) {
-    const entityType = entityTypeSchema.parse(type)
-    const entitySchema = getEntitySchema(entityType)
-    const keys = Object.keys(entitySchema.shape).join(', ')
-    const query = event.context.supabase.client
-      .from(entityTables[entityType])
-      .select(keys)
-      .order('order', { ascending: true })
-      .order('created_at', { ascending: false })
-      .eq('user', event.context.supabase.user.id)
+  const { ids, filters } = getAllBodySchema.parse(body ?? {})
+  const entityType = entityTypeSchema.parse(type)
+  const entitySchema = getEntitySchema(entityType)
+  const keys = Object.keys(entitySchema.shape).join(', ')
+  const query = event.context.supabase.client
+    .from(entityTables[entityType])
+    .select(keys)
+    .order('order', { ascending: true })
+    .order('created_at', { ascending: false })
 
-    for (const filter of filters ?? []) {
-      const [filterKey, operator, value] = filter
-      query[operator](filterKey, value)
-    }
+  if (ids?.length) {
+    query.in('id', ids)
+  } else {
+    query.eq('user', event.context.supabase?.user?.id)
+  }
 
-    const { data, error } = await query
+  for (const filter of filters ?? []) {
+    const [filterKey, operator, value] = filter
+    query[operator](filterKey, value)
+  }
 
-    if (!error && data) {
-      return {
-        ok: true,
-        payload: z.array(entitySchema).safeParse(data).data ?? [],
-      }
+  const { data, error } = await query
+
+  if (!error && data) {
+    return {
+      ok: true,
+      payload: z.array(entitySchema).safeParse(data).data ?? [],
     }
   }
 
@@ -62,7 +73,6 @@ export const getEntity = async (
   const entitySchema = getEntitySchema(entityType)
   const entityKeys = Object.keys(entitySchema.shape)
 
-  const childTypes = children ?? []
   const childrenData = (children ?? []).map((type) => ({
     type,
     table: entityTables[type],

@@ -5,9 +5,9 @@ export default defineEventHandler(async (event) => {
   if (body.tag) {
     body.tag = body.tag?.filter(Boolean)
     if (body.tag?.length) {
-      const { payload: savedTags } = await getEntities(event, 'tag', [
-        ['name', 'in', body.tag],
-      ])
+      const { payload: savedTags } = await getEntities(event, 'tag', {
+        filters: [['name', 'in', body.tag]],
+      })
       const newTagNames = body.tag.filter(
         (tagName: string) => !savedTags?.some((tag) => tag.name === tagName),
       )

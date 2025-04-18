@@ -5,7 +5,7 @@ export function useEntities<T extends { id: string; order?: number | null }>(
   data?: Ref<T[]>,
   options?: {
     key?: string
-    callback?: (force?: boolean) => Promise<void>
+    callback?: (_force?: boolean) => Promise<void>
   },
 ) {
   const { user } = useUser()
@@ -29,9 +29,13 @@ export function useEntities<T extends { id: string; order?: number | null }>(
     if (!entities.value.length || force) {
       loading.value = true
       if (!data) {
-        const { payload } = await $fetch(`/api/wishlist/${type}/my`)
-        if (payload) {
-          entities.value = payload as T[]
+        try {
+          const { payload } = await $fetch(`/api/wishlist/${type}/my`)
+          if (payload) {
+            entities.value = payload as T[]
+          }
+        } catch {
+          // Handle error if needed
         }
       } else if (options?.callback) {
         await options.callback(force)

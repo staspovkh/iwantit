@@ -18,7 +18,8 @@ export default withNuxt(prettierRecommended, {
         functions: false,
       },
     ],
-    "no-unused-vars": 2,
+    "no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
     "brace-style": 2,
     "no-mixed-spaces-and-tabs": 2,
     "key-spacing": 2,
@@ -41,7 +42,7 @@ export default withNuxt(prettierRecommended, {
     "max-depth": [
       2,
       {
-        max: 3,
+        max: 4,
       },
     ],
     "default-case": 0,

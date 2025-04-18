@@ -4,35 +4,22 @@ import type { Wishlist } from '~/types/entities'
 const emit = defineEmits<{ submitted: [Partial<Wishlist>] }>()
 const props = defineProps<{ wishlist?: Wishlist }>()
 
-const wishlistModel = reactive({
-  name: '',
-})
-
-const updateModel = (newWishlist: Partial<Wishlist>) => {
-  wishlistModel.name = newWishlist.name ?? wishlistModel.name
-}
-
-const submitForm = (data: typeof wishlistModel) => {
-  emit('submitted', data)
-}
-
-watch(
-  () => props.wishlist,
-  (newWishlist) => {
-    if (newWishlist) {
-      updateModel(newWishlist)
-    }
+const { model, submitForm } = useEntityForm<Wishlist>(
+  {
+    name: '',
+    public: false,
   },
-  { immediate: true },
+  toRef(props, 'wishlist'),
+  emit,
 )
 </script>
 <template>
   <div>
     <Form
-      :model="wishlistModel"
       name="wishlist"
+      :model="model"
       :button-label="wishlist ? 'update wishlist' : 'add wishlist'"
-      @submitted="submitForm($event as typeof wishlistModel)"
+      @submitted="submitForm"
     />
   </div>
 </template>

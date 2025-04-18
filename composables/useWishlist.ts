@@ -1,20 +1,28 @@
-import type { Wishlist, WishlistItem } from '~/types/entities'
+import type { Wishlist, WishlistItem, WishlistTag } from '~/types/entities'
 
 type WishlistExt = Wishlist & {
   item?: WishlistItem[]
+  tag?: WishlistTag[]
 }
 
 export function useWishlist(wishlistId: string) {
-  const {
-    loading: wishlistLoading,
-    entity: wishlist,
-    get: getWishlistEntity,
-  } = useEntity<WishlistExt>('wishlist', wishlistId, ['item'])
-
-  const { loading: tagsLoading, tags, getTags } = useTags()
+  const wishlist = ref<WishlistExt | null>(null)
+  const wishlistLoading = ref(false)
 
   const getWishlist = async (force?: boolean) => {
-    await Promise.all([getWishlistEntity(force), getTags(force)])
+    if (!wishlist.value || force) {
+      wishlistLoading.value = true
+      const { payload } = await $fetch(`/api/wishlist`, {
+        method: 'POST',
+        body: {
+          id: wishlistId,
+        },
+      })
+      if (payload) {
+        wishlist.value = payload
+      }
+      wishlistLoading.value = false
+    }
   }
 
   const {
@@ -30,7 +38,9 @@ export function useWishlist(wishlistId: string) {
         wishlist.value?.item?.map((item) => ({
           ...item,
           tag: item.tag
-            ?.map((id) => tags.value.find((t) => t.id === id)?.name ?? '')
+            ?.map(
+              (id) => wishlist.value?.tag?.find((t) => t.id === id)?.name ?? '',
+            )
             .filter(Boolean),
         })) ?? [],
     ),
@@ -40,9 +50,7 @@ export function useWishlist(wishlistId: string) {
     },
   )
 
-  const loading = computed(
-    () => wishlistLoading.value || tagsLoading.value || itemLoading.value,
-  )
+  const loading = computed(() => wishlistLoading.value || itemLoading.value)
 
   const addItem = async (item: Partial<WishlistItem>) => {
     await addItemEntity({ ...item, wishlist: wishlistId })
@@ -55,11 +63,16 @@ export function useWishlist(wishlistId: string) {
         id: undefined,
         name: 'All',
       },
-      ...tags.value.filter((tag) =>
-        wishlistItems.value.some((item) =>
-          item.tag?.some((tagName) => tagName === tag.name),
-        ),
-      ),
+      ...(wishlist.value?.tag
+        ?.filter((tag) =>
+          wishlistItems.value.some((item) =>
+            item.tag?.some((tagName) => tagName === tag.name),
+          ),
+        )
+        .map((tag) => ({
+          id: tag.id,
+          name: tag.name ?? '',
+        })) ?? []),
     ].map((category) => ({
       ...category,
       selected: category.id === categoryId.value,
@@ -69,7 +82,7 @@ export function useWishlist(wishlistId: string) {
     if (!categoryId.value) {
       return wishlistItems.value
     }
-    const categoryName = tags.value.find(
+    const categoryName = wishlist.value?.tag?.find(
       (tag) => tag.id === categoryId.value,
     )?.name
     return wishlistItems.value.filter((item) =>
@@ -83,7 +96,6 @@ export function useWishlist(wishlistId: string) {
   return {
     loading,
     wishlist,
-    tags,
     categories,
     items,
     getWishlist,

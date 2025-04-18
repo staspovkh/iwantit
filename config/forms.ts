@@ -1,6 +1,6 @@
-import type { InputText } from '~/types'
+import type { InputCheckbox, InputText } from '~/types'
 
-export const fields: Record<string, InputText> = {
+export const fields: Record<string, InputText | InputCheckbox> = {
   name: {
     name: 'name',
     type: 'text',
@@ -51,5 +51,11 @@ export const fields: Record<string, InputText> = {
     type: 'text',
     label: 'Link',
     minlength: 2,
+  },
+  public: {
+    name: 'public',
+    type: 'checkbox',
+    label: 'Public',
+    value: false,
   },
 }

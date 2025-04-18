@@ -1,61 +1,59 @@
 <script setup lang="ts">
 import type { WishlistItem } from '~/types/entities'
 
+type WishlistItemForm = Omit<
+  WishlistItem,
+  'id' | 'picture' | 'price' | 'tag'
+> & {
+  picture?: string
+  price?: string
+  tag?: string
+}
+
+const item2Form = (item: Partial<WishlistItem>): Partial<WishlistItemForm> => ({
+  ...item,
+  picture: item.picture?.[0],
+  price: typeof item.price === 'number' ? String(item.price) : undefined,
+  tag: item.tag?.filter(Boolean).join(', '),
+})
+
 const emit = defineEmits<{ submitted: [Partial<WishlistItem>] }>()
 const props = defineProps<{ item?: WishlistItem }>()
 
-const itemLoading = ref(false)
-const itemUrl = ref('')
-const itemModel = reactive({
-  link: '',
-  name: '',
-  description: '',
-  picture: '',
-  price: '',
-  currency: '',
-  tag: '',
-})
+const { model, updateModel } = useEntityForm<WishlistItemForm>(
+  {
+    link: '',
+    name: '',
+    description: '',
+    picture: '',
+    price: '',
+    currency: '',
+    tag: '',
+  },
+  computed(() => props.item && item2Form(props.item)),
+)
 
-const updateModel = (newItem: Partial<WishlistItem>) => {
-  itemUrl.value = newItem.link || ''
-  itemModel.link = newItem.link ?? itemModel.link
-  itemModel.name = newItem.name ?? itemModel.name
-  itemModel.description = newItem.description ?? itemModel.description
-  itemModel.picture = newItem.picture?.[0] ?? itemModel.picture
-  itemModel.price = newItem.price?.toString() ?? itemModel.price
-  itemModel.currency = newItem.currency ?? itemModel.currency
-  itemModel.tag = newItem.tag?.filter(Boolean).join(', ') ?? itemModel.tag
-}
+const itemLoading = ref(false)
+const itemUrl = ref(toRef(props, 'item').value?.link || '')
 
 const updateModelFromUrl = async (url: string) => {
   itemLoading.value = true
   const item = await parseWishlistItem(url)
   if (item) {
-    updateModel(item)
+    updateModel(item2Form(item))
   }
   itemLoading.value = false
 }
 
-const submitForm = (data: typeof itemModel) => {
+const submitForm = (data: WishlistItemForm) => {
   const formData = {
     ...data,
-    link: itemUrl.value,
     picture: data.picture ? [data.picture] : undefined,
     price: data.price ? Number(data.price) : undefined,
-    tag: data.tag.split(',').map((tag) => tag.trim()),
+    tag: data.tag?.split(',').map((tag) => tag.trim()),
   }
   emit('submitted', formData)
 }
-
-watch(
-  () => props.item,
-  (newItem) => {
-    if (newItem) {
-      updateModel(newItem)
-    }
-  },
-  { immediate: true },
-)
 </script>
 <template>
   <div>
@@ -81,10 +79,10 @@ watch(
           'opacity-30 pointer-events-none': itemLoading,
         },
       ]"
-      :model="itemModel"
+      :model="model"
       name="wishlist-item"
       :button-label="item ? 'update wishlist item' : 'add wishlist item'"
-      @submitted="submitForm($event as typeof itemModel)"
+      @submitted="submitForm"
     />
   </div>
 </template>
