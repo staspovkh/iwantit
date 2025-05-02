@@ -54,4 +54,5 @@ export interface InputText extends InputTemplate {
 
 export interface InputCheckbox extends InputTemplate {
   value?: boolean
+  fancy?: boolean
 }

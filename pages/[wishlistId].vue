@@ -136,10 +136,11 @@ definePageMeta({
             'transition-opacity duration-300',
           ]"
         >
-          <NuxtImg
+          <Image
             v-if="item.picture?.[0]"
             class="w-full h-full object-cover"
             :src="item.picture[0]"
+            :alt="item.name"
           />
         </li>
       </ul>
@@ -148,10 +149,11 @@ definePageMeta({
         class="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-4 mt-4"
       >
         <WishlistItem
-          v-for="item in items"
+          v-for="(item, index) in items"
           :key="item.id"
           :item="item"
           :actions="isOwner"
+          :preload="!index"
           @edit="openModal(item)"
           @remove="removeItem(item.id)"
         />

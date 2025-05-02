@@ -57,5 +57,6 @@ export const fields: Record<string, InputText | InputCheckbox> = {
     type: 'checkbox',
     label: 'Public',
     value: false,
+    fancy: true,
   },
 }

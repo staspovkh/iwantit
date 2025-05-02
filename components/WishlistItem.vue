@@ -2,7 +2,7 @@
 import type { WishlistItem } from '~/types/entities'
 
 defineEmits<{ remove: []; edit: [] }>()
-defineProps<{ item: WishlistItem; actions?: boolean }>()
+defineProps<{ item: WishlistItem; actions?: boolean; preload?: boolean }>()
 </script>
 <template>
   <div
@@ -13,22 +13,20 @@ defineProps<{ item: WishlistItem; actions?: boolean }>()
   >
     <Action
       v-if="item.picture?.[0]"
-      class="w-full aspect-square rounded-t-2xl overflow-hidden"
+      class="w-full rounded-t-2xl overflow-hidden"
       :to="item.link"
       :title="item.name"
-      target="_blank"
-      rel="noopener noreferrer"
     >
-      <NuxtImg class="w-full h-full object-cover" :src="item.picture[0]" />
+      <Image
+        class="flex-1 aspect-square"
+        :src="item.picture[0]"
+        :alt="item.name"
+        :preload="preload"
+      />
     </Action>
     <div class="p-4">
       <div class="flex items-start justify-between gap-2">
-        <Action
-          class="font-semibold text-base/normal mr-auto"
-          :to="item.link"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <Action class="font-semibold text-base/normal mr-auto" :to="item.link">
           {{ item.name }}
         </Action>
         <Action

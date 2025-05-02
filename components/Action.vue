@@ -9,6 +9,13 @@ const componentName = computed(() => {
   return props.to ? resolveComponent('NuxtLink') : 'button'
 })
 const primary = computed(() => !props.secondary)
+const isExternal = computed(
+  () =>
+    typeof props.to === 'string' &&
+    (props.to.search(/(^\/|^#)/g) === -1 ||
+      /^tel/.test(props.to) ||
+      /^mailto/.test(props.to)),
+)
 </script>
 <template>
   <component
@@ -30,6 +37,8 @@ const primary = computed(() => !props.secondary)
         'disabled:border-black/10 disabled:text-black/30': button && secondary,
       },
     ]"
+    :target="isExternal ? '_blank' : undefined"
+    :rel="isExternal ? 'noopener noreferrer' : undefined"
   >
     <Icon v-if="icon" :name="icon" />
     <slot />
