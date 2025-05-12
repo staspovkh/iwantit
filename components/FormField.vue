@@ -11,6 +11,8 @@ const formFieldComponent = computed(() => {
       return resolveComponent('Checkbox')
     case 'radio':
       return resolveComponent('Radio')
+    case 'select':
+      return resolveComponent('Select')
     default:
       return resolveComponent('Input')
   }

@@ -125,7 +125,11 @@ definePageMeta({
           />
         </li>
       </ul>
-      <Modal title="Add wishlist" :open="modalOpen" @close="closeModal()">
+      <Modal
+        :title="wishlistToEdit ? 'Edit wishlist' : 'Add wishlist'"
+        :open="modalOpen"
+        @close="closeModal()"
+      >
         <WishlistForm
           :wishlist="wishlistToEdit"
           @submitted="submitModal($event)"

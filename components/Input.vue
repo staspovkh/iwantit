@@ -5,7 +5,6 @@ const props = withDefaults(defineProps<InputText>(), {
   value: '',
 })
 const emit = defineEmits<{
-  error: [string]
   'update:value': [InputValue]
   'update:enter': [InputValue]
 }>()

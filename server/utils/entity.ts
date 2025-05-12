@@ -156,6 +156,7 @@ export const addEntity = async (
         .from(entityTables[entityType])
         .update(rest)
         .eq('id', id)
+        .eq('user', event.context.supabase.user.id)
         .select()
     } else {
       result = await event.context.supabase.client

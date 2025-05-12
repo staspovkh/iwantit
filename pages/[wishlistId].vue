@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Tabs from '~/components/Tabs.vue'
-import type { WishlistItem } from '~/types/entities'
+import type { Wishlist, WishlistItem } from '~/types/entities'
 
 const {
   params: { wishlistId },
@@ -8,7 +8,7 @@ const {
 
 const { user } = useUser()
 const {
-  loading,
+  loading: wishlistLoading,
   wishlist,
   categories,
   items,
@@ -18,6 +18,9 @@ const {
   sortItems,
   selectCategory,
 } = useWishlist(String(wishlistId))
+const { loading: wishlistsLoading, addWishlist } = useWishlists()
+
+const loading = computed(() => wishlistLoading.value || wishlistsLoading.value)
 
 onMounted(async () => {
   await getWishlist()
@@ -29,6 +32,22 @@ onMounted(async () => {
 const isOwner = computed(() => {
   return wishlist.value?.user === user.value?.id
 })
+
+const editOpen = ref(false)
+
+const submitEdit = async (item: Partial<Wishlist>) => {
+  if (wishlist.value) {
+    await addWishlist({
+      ...item,
+      id: wishlist.value.id,
+    })
+    wishlist.value = {
+      ...wishlist.value,
+      ...item,
+    }
+  }
+  editOpen.value = false
+}
 
 const modalOpen = ref(false)
 const itemToEdit = ref<WishlistItem | undefined>()
@@ -95,6 +114,12 @@ definePageMeta({
     <WishlistLayout v-if="wishlist" :title="wishlist.name" :loading="loading">
       <template v-if="isOwner" #actions>
         <Action
+          icon="ic:outline-edit"
+          title="Edit"
+          :disabled="sortingMode"
+          @click="!sortingMode ? (editOpen = true) : void 0"
+        />
+        <Action
           :class="[
             'rounded-sm',
             {
@@ -160,6 +185,13 @@ definePageMeta({
       </div>
       <Modal title="Add wishlist item" :open="modalOpen" @close="closeModal()">
         <WishlistItemForm :item="itemToEdit" @submitted="submitModal($event)" />
+      </Modal>
+      <Modal
+        title="Edit wishlist"
+        :open="wishlist && editOpen"
+        @close="editOpen = false"
+      >
+        <WishlistForm :wishlist="wishlist" @submitted="submitEdit($event)" />
       </Modal>
     </WishlistLayout>
   </div>

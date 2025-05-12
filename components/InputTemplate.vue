@@ -1,6 +1,10 @@
 <script lang="ts" setup>
 import type { InputTemplate } from '~/types'
 
+defineOptions({
+  inheritAttrs: false,
+})
+
 const props = defineProps<InputTemplate>()
 
 const inputClassName = computed(() => [
@@ -18,7 +22,7 @@ const inputClassName = computed(() => [
 </script>
 
 <template>
-  <div>
+  <div :class="$attrs.class">
     <label v-if="label" class="block mb-2 font-bold text-md/4" :for="fieldId">
       {{ label }}
       <span v-if="required" class="text-error">*</span>

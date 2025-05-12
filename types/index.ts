@@ -42,6 +42,7 @@ export interface InputTemplate {
 
   fieldId?: string
   label?: string
+  placeholder?: string
   error?: boolean
   errorMessage?: string
   inputSize?: 'small' | 'medium' | 'tiny'
@@ -55,4 +56,13 @@ export interface InputText extends InputTemplate {
 export interface InputCheckbox extends InputTemplate {
   value?: boolean
   fancy?: boolean
+}
+
+export interface InputSelect extends InputTemplate {
+  value?: string
+  options: {
+    label: string
+    value: string
+  }[]
+  top?: boolean
 }

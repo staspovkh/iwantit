@@ -43,6 +43,7 @@ export type Database = {
           currency: string | null
           description: string | null
           id: string
+          level: number | null
           link: string | null
           name: string | null
           order: number | null
@@ -59,6 +60,7 @@ export type Database = {
           currency?: string | null
           description?: string | null
           id?: string
+          level?: number | null
           link?: string | null
           name?: string | null
           order?: number | null
@@ -75,6 +77,7 @@ export type Database = {
           currency?: string | null
           description?: string | null
           id?: string
+          level?: number | null
           link?: string | null
           name?: string | null
           order?: number | null

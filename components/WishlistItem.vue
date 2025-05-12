@@ -2,7 +2,22 @@
 import type { WishlistItem } from '~/types/entities'
 
 defineEmits<{ remove: []; edit: [] }>()
-defineProps<{ item: WishlistItem; actions?: boolean; preload?: boolean }>()
+const props = defineProps<{
+  item: WishlistItem
+  actions?: boolean
+  preload?: boolean
+}>()
+
+const icon = computed(() => {
+  switch (props.item.level) {
+    case 1:
+      return 'ic:baseline-sentiment-satisfied-alt'
+    case 2:
+      return 'ic:baseline-sentiment-very-satisfied'
+    default:
+      return 'ic:baseline-sentiment-satisfied'
+  }
+})
 </script>
 <template>
   <div
@@ -11,19 +26,22 @@ defineProps<{ item: WishlistItem; actions?: boolean; preload?: boolean }>()
       'shadow-2xl shadow-black/10 hover:shadow-black/30 ',
     ]"
   >
-    <Action
-      v-if="item.picture?.[0]"
-      class="w-full rounded-t-2xl overflow-hidden"
-      :to="item.link"
-      :title="item.name"
-    >
-      <Image
-        class="flex-1 aspect-square"
-        :src="item.picture[0]"
-        :alt="item.name"
-        :preload="preload"
-      />
-    </Action>
+    <div class="relative">
+      <Action
+        v-if="item.picture?.[0]"
+        class="w-full rounded-t-2xl overflow-hidden"
+        :to="item.link"
+        :title="item.name"
+      >
+        <Image
+          class="flex-1 aspect-square"
+          :src="item.picture[0]"
+          :alt="item.name"
+          :preload="preload"
+        />
+      </Action>
+      <Icon :name="icon" class="absolute top-2 right-2 text-orange-500" />
+    </div>
     <div class="p-4">
       <div class="flex items-start justify-between gap-2">
         <Action class="font-semibold text-base/normal mr-auto" :to="item.link">

@@ -3,10 +3,11 @@ import type { WishlistItem } from '~/types/entities'
 
 type WishlistItemForm = Omit<
   WishlistItem,
-  'id' | 'picture' | 'price' | 'tag'
+  'id' | 'picture' | 'price' | 'level' | 'tag'
 > & {
   picture?: string
   price?: string
+  level?: string
   tag?: string
 }
 
@@ -14,6 +15,7 @@ const item2Form = (item: Partial<WishlistItem>): Partial<WishlistItemForm> => ({
   ...item,
   picture: item.picture?.[0],
   price: typeof item.price === 'number' ? String(item.price) : undefined,
+  level: typeof item.level === 'number' ? String(item.level) : undefined,
   tag: item.tag?.filter(Boolean).join(', '),
 })
 
@@ -29,6 +31,7 @@ const { model, updateModel } = useEntityForm<WishlistItemForm>(
     price: '',
     currency: '',
     tag: '',
+    level: '0',
   },
   computed(() => props.item && item2Form(props.item)),
 )
@@ -50,6 +53,7 @@ const submitForm = (data: WishlistItemForm) => {
     ...data,
     picture: data.picture ? [data.picture] : undefined,
     price: data.price ? Number(data.price) : undefined,
+    level: data.level ? Number(data.level) : undefined,
     tag: data.tag?.split(',').map((tag) => tag.trim()),
   }
   emit('submitted', formData)

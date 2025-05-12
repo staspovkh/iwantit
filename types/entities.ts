@@ -20,6 +20,7 @@ const itemSchema = z.object({
   currency: z.string().nullish(),
   link: z.string().nullish(),
   brand: z.string().nullish(),
+  level: z.number().nullish(),
   order: z.number().nullish(),
   reserve: z.number().nullish(),
   tag: z.array(z.string()).nullish(),

@@ -25,4 +25,22 @@
   .tile {
     @apply bg-white rounded-xl shadow-md p-4 border;
   }
+
+  .asf-scrollbar {
+    &::-webkit-scrollbar {
+      @apply w-1.5;
+    }
+
+    &::-webkit-scrollbar-track {
+      @apply bg-black/10 rounded;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      @apply bg-black/70 rounded;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      @apply bg-black/60;
+    }
+  }
 }

@@ -24,6 +24,7 @@
     "@nuxtjs/supabase": "^1.5.0",
     "@tailwindcss/vite": "^4.1.5",
     "@unhead/vue": "^2.0.8",
+    "@vueform/multiselect": "^2.6.11",
     "eslint": "^9.25.1",
     "node-html-parser": "^7.0.1",
     "nuxt": "^3.17.1",
