@@ -6,8 +6,8 @@ import { useForm } from 'vee-validate'
 import { fields as fieldDefinitions } from '~/config/forms'
 
 const emit = defineEmits<{
-  submitted: [Record<string, InputValue>]
-  'update:model': [Record<string, InputValue>]
+  submitted: [Form['model']]
+  'update:model': [Form['model']]
 }>()
 const props = defineProps<Form>()
 
@@ -26,7 +26,7 @@ const {
 const values = computed(() =>
   'value' in rawValues
     ? rawValues.value
-    : (rawValues as Record<string, string | boolean>),
+    : (rawValues as Record<string, InputValue>),
 )
 const errors = computed(
   () => rawErrors.value as Record<string, string | undefined>,
@@ -35,12 +35,17 @@ const errors = computed(
 const keys = computed(() => Object.keys(props.model))
 const fields = computed(() =>
   keys.value
-    .map((key) => ({
-      ...fieldDefinitions[key],
-      value: values.value[key],
+    .map((name) => ({
+      ...fieldDefinitions[name],
+      ...props.fieldsExt?.[name],
+      name,
+      value:
+        typeof values.value[name] === 'boolean'
+          ? values.value[name]
+          : String(values.value[name] || ''),
       form: formId.value,
-      error: Boolean(errors.value[key]),
-      errorMessage: errors.value[key],
+      error: Boolean(errors.value[name]),
+      errorMessage: errors.value[name],
     }))
     .filter((field) => field.name),
 )
@@ -55,7 +60,7 @@ const ready = computed(() =>
 
 const validateForm = async () => (await validate()).valid
 
-const updateFormModel = (newValues: Record<string, InputValue>) => {
+const updateFormModel = (newValues: Form['model']) => {
   Object.keys(newValues).forEach((key) => {
     const val = values.value[key]
     if (typeof val !== 'undefined') {
@@ -77,7 +82,7 @@ watch(
         acc[key] = props.model[key]
         return acc
       },
-      {} as Record<string, InputValue | undefined>,
+      {} as Form['model'],
     )
   },
   (newValues, oldValues) => {

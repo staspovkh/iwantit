@@ -39,6 +39,7 @@ export type Database = {
       wishlist_item: {
         Row: {
           brand: string | null
+          completed: boolean
           created_at: string
           currency: string | null
           description: string | null
@@ -49,13 +50,15 @@ export type Database = {
           order: number | null
           picture: Json[] | null
           price: number | null
-          reserve: number | null
+          reserve: string | null
+          reserve_message: string | null
           tag: string[] | null
           user: string
           wishlist: string
         }
         Insert: {
           brand?: string | null
+          completed?: boolean
           created_at?: string
           currency?: string | null
           description?: string | null
@@ -66,13 +69,15 @@ export type Database = {
           order?: number | null
           picture?: Json[] | null
           price?: number | null
-          reserve?: number | null
+          reserve?: string | null
+          reserve_message?: string | null
           tag?: string[] | null
           user?: string
           wishlist?: string
         }
         Update: {
           brand?: string | null
+          completed?: boolean
           created_at?: string
           currency?: string | null
           description?: string | null
@@ -83,7 +88,8 @@ export type Database = {
           order?: number | null
           picture?: Json[] | null
           price?: number | null
-          reserve?: number | null
+          reserve?: string | null
+          reserve_message?: string | null
           tag?: string[] | null
           user?: string
           wishlist?: string

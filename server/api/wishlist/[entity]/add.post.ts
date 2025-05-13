@@ -1,5 +1,14 @@
 import { addEntity } from '~/server/utils/entity'
 
+const skipUserCheck = (type?: string, body?: Record<string, unknown>) => {
+  if (type === 'item') {
+    return Object.keys(body ?? {}).every((key) =>
+      ['id', 'reserve', 'reserve_message'].includes(key),
+    )
+  }
+  return false
+}
+
 export default defineEventHandler(async (event) => {
   const body = await readBody(event)
   if (body.tag) {
@@ -24,5 +33,10 @@ export default defineEventHandler(async (event) => {
       body.tag = undefined
     }
   }
-  return await addEntity(event, event.context.params?.entity, body)
+  return await addEntity(
+    event,
+    event.context.params?.entity,
+    body,
+    skipUserCheck(event.context.params?.entity, body),
+  )
 })

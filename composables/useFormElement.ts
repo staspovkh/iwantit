@@ -1,7 +1,12 @@
-import type { InputCheckbox, InputTemplate, InputText } from '~/types'
+import type {
+  InputCheckbox,
+  InputTemplate,
+  InputText,
+  InputValue,
+} from '~/types'
 import { type RuleExpression, useField } from 'vee-validate'
 
-export const useFormElement = <T extends string | boolean>(
+export const useFormElement = <T extends InputValue>(
   props: InputText | InputCheckbox,
   defaultType = 'text',
   validationRules?: () => boolean | string,

@@ -22,7 +22,9 @@ const itemSchema = z.object({
   brand: z.string().nullish(),
   level: z.number().nullish(),
   order: z.number().nullish(),
-  reserve: z.number().nullish(),
+  reserve: z.string().nullish(),
+  reserve_message: z.string().nullish(),
+  completed: z.boolean().nullish(),
   tag: z.array(z.string()).nullish(),
 })
 export type WishlistItem = z.infer<typeof itemSchema>

@@ -138,6 +138,7 @@ export const addEntity = async (
   event: H3Event,
   type?: string,
   body?: unknown,
+  skipUserCheck?: boolean,
 ) => {
   const entityType = entityTypeSchema.parse(type)
   const entitySchema = getEntitySchema(entityType).merge(addBodySchema)
@@ -149,21 +150,17 @@ export const addEntity = async (
       ? data.length && data.every(addDataValid)
       : addDataValid(data)
   ) {
-    let result
+    let query = event.context.supabase.client.from(entityTables[entityType])
     if ('id' in data && data.id) {
       const { id, ...rest } = data
-      result = await event.context.supabase.client
-        .from(entityTables[entityType])
-        .update(rest)
-        .eq('id', id)
-        .eq('user', event.context.supabase.user.id)
-        .select()
+      query = query.update(rest).eq('id', id)
+      if (!skipUserCheck) {
+        query = query.eq('user', event.context.supabase.user.id)
+      }
     } else {
-      result = await event.context.supabase.client
-        .from(entityTables[entityType])
-        .insert(data)
-        .select()
+      query = query.insert(data)
     }
+    const result = await query.select()
     if (!result.error && result.data) {
       return {
         ok: true,

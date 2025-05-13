@@ -177,7 +177,6 @@ defineExpose({
           <Icon
             :class="[
               multiselectClasses.caret,
-              'transition-transform duration-300',
               {
                 'rotate-180': open,
               },

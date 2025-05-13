@@ -15,6 +15,9 @@ const {
   getWishlist,
   addItem,
   removeItem,
+  addItemReservation,
+  removeItemReservation,
+  addItemCompletion,
   sortItems,
   selectCategory,
 } = useWishlist(String(wishlistId))
@@ -49,25 +52,41 @@ const submitEdit = async (item: Partial<Wishlist>) => {
   editOpen.value = false
 }
 
-const modalOpen = ref(false)
+const itemEditOpen = ref(false)
 const itemToEdit = ref<WishlistItem | undefined>()
+const itemToReserve = ref<WishlistItem | undefined>()
 
-const openModal = (item?: WishlistItem) => {
-  modalOpen.value = true
+const openItemEdit = (item?: WishlistItem) => {
+  itemEditOpen.value = true
   itemToEdit.value = item
 }
-
-const closeModal = () => {
-  modalOpen.value = false
+const closeItemEdit = () => {
+  itemEditOpen.value = false
   itemToEdit.value = undefined
 }
-
-const submitModal = async (item: Partial<WishlistItem>) => {
+const submitItemEdit = async (item: Partial<WishlistItem>) => {
   await addItem({
-    ...item,
     id: itemToEdit.value?.id,
+    ...item,
   })
-  closeModal()
+  closeItemEdit()
+}
+
+const openItemReserve = (item: WishlistItem) => {
+  itemToReserve.value = item
+}
+const closeItemReserve = () => {
+  itemToReserve.value = undefined
+}
+const submitItemReserve = async (
+  item: WishlistItem,
+  data: {
+    reserve: string
+    reserve_message?: string
+  },
+) => {
+  await addItemReservation(item, data)
+  closeItemReserve()
 }
 
 const sortingMode = ref(false)
@@ -136,7 +155,7 @@ definePageMeta({
           :disabled="sortingMode"
           icon="ic:outline-plus"
           title="Add new item"
-          @click="openModal()"
+          @click="openItemEdit()"
         />
       </template>
       <div
@@ -179,12 +198,33 @@ definePageMeta({
           :item="item"
           :actions="isOwner"
           :preload="!index"
-          @edit="openModal(item)"
+          @edit="openItemEdit(item)"
           @remove="removeItem(item.id)"
+          @complete="addItemCompletion(item, $event)"
+          @reserve:add="openItemReserve(item)"
+          @reserve:remove="removeItemReservation(item)"
         />
       </div>
-      <Modal title="Add wishlist item" :open="modalOpen" @close="closeModal()">
-        <WishlistItemForm :item="itemToEdit" @submitted="submitModal($event)" />
+      <Modal
+        title="Add wishlist item"
+        :open="itemEditOpen"
+        @close="closeItemEdit()"
+      >
+        <WishlistItemForm
+          :item="itemToEdit"
+          @submitted="submitItemEdit($event)"
+        />
+      </Modal>
+      <Modal
+        v-if="itemToReserve"
+        title="Reserve"
+        open
+        @close="closeItemReserve()"
+      >
+        <WishlistItemReserveForm
+          :item="itemToReserve"
+          @submitted="submitItemReserve(itemToReserve, $event)"
+        />
       </Modal>
       <Modal
         title="Edit wishlist"

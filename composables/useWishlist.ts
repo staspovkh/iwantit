@@ -6,7 +6,10 @@ type WishlistExt = Wishlist & {
 }
 
 export function useWishlist(wishlistId: string) {
-  const wishlist = ref<WishlistExt | null>(null)
+  const wishlist = useState<WishlistExt | null>(
+    `wishlist-${wishlistId}`,
+    () => null,
+  )
   const wishlistLoading = ref(false)
 
   const getWishlist = async (force?: boolean) => {
@@ -93,6 +96,34 @@ export function useWishlist(wishlistId: string) {
     categoryId.value = id
   }
 
+  const addItemReservation = async (
+    item: WishlistItem,
+    data: {
+      reserve: string
+      reserve_message?: string
+    },
+  ) => {
+    await addItemEntity({
+      id: item.id,
+      ...data,
+    })
+  }
+
+  const removeItemReservation = async (item: WishlistItem) => {
+    await addItemEntity({
+      id: item.id,
+      reserve: null,
+      reserve_message: null,
+    })
+  }
+
+  const addItemCompletion = async (item: WishlistItem, completed?: boolean) => {
+    await addItem({
+      ...item,
+      completed: Boolean(completed),
+    })
+  }
+
   return {
     loading,
     wishlist,
@@ -101,6 +132,9 @@ export function useWishlist(wishlistId: string) {
     getWishlist,
     addItem,
     removeItem,
+    addItemReservation,
+    removeItemReservation,
+    addItemCompletion,
     sortItems,
     selectCategory,
   }

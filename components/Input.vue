@@ -93,7 +93,11 @@ defineExpose({
 </script>
 
 <template>
-  <InputTemplate v-bind="$props" :field-id="fieldId">
+  <InputTemplate
+    v-bind="$props"
+    :field-id="fieldId"
+    :class="{ hidden: type === 'hidden' }"
+  >
     <template #content-input="{ className }">
       <div :class="className">
         <component

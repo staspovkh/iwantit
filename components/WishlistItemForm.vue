@@ -1,39 +1,29 @@
 <script setup lang="ts">
 import type { WishlistItem } from '~/types/entities'
 
-type WishlistItemForm = Omit<
-  WishlistItem,
-  'id' | 'picture' | 'price' | 'level' | 'tag'
-> & {
-  picture?: string
-  price?: string
-  level?: string
-  tag?: string
+const defaultModel = {
+  link: '',
+  name: '',
+  description: '',
+  picture: '',
+  price: '',
+  currency: '',
+  tag: '',
+  level: '0',
 }
 
-const item2Form = (item: Partial<WishlistItem>): Partial<WishlistItemForm> => ({
-  ...item,
-  picture: item.picture?.[0],
-  price: typeof item.price === 'number' ? String(item.price) : undefined,
-  level: typeof item.level === 'number' ? String(item.level) : undefined,
-  tag: item.tag?.filter(Boolean).join(', '),
-})
+const item2Form = (item?: Partial<WishlistItem>) => {
+  const result = entityToForm<Omit<WishlistItem, 'id'>>(item)
+  result.picture = item?.picture?.[0] || ''
+  return result
+}
 
 const emit = defineEmits<{ submitted: [Partial<WishlistItem>] }>()
 const props = defineProps<{ item?: WishlistItem }>()
 
-const { model, updateModel } = useEntityForm<WishlistItemForm>(
-  {
-    link: '',
-    name: '',
-    description: '',
-    picture: '',
-    price: '',
-    currency: '',
-    tag: '',
-    level: '0',
-  },
-  computed(() => props.item && item2Form(props.item)),
+const { model, updateModel } = useEntityForm<typeof defaultModel>(
+  defaultModel,
+  computed(() => item2Form(props.item)),
 )
 
 const itemLoading = ref(false)
@@ -48,7 +38,7 @@ const updateModelFromUrl = async (url: string) => {
   itemLoading.value = false
 }
 
-const submitForm = (data: WishlistItemForm) => {
+const submitForm = (data: typeof defaultModel) => {
   const formData = {
     ...data,
     picture: data.picture ? [data.picture] : undefined,
@@ -86,7 +76,7 @@ const submitForm = (data: WishlistItemForm) => {
       :model="model"
       name="wishlist-item"
       :button-label="item ? 'update wishlist item' : 'add wishlist item'"
-      @submitted="submitForm"
+      @submitted="submitForm($event as typeof defaultModel)"
     />
   </div>
 </template>

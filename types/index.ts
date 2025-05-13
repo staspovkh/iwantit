@@ -1,21 +1,13 @@
+export type InputValue = string | boolean
+
+export type FormModel<T> = Record<keyof T, InputValue>
+
 export type User = {
   id: string
   email?: string
   name?: string
   picture?: string
 }
-
-export interface Form {
-  name: string
-  model: {
-    [key: string]: string | boolean | number | null
-  }
-  id?: string
-  buttonLabel?: string
-  submitting?: boolean
-}
-
-export type InputValue = string | boolean
 
 export interface InputTemplate {
   type:
@@ -29,7 +21,8 @@ export interface InputTemplate {
     | 'checkbox'
     | 'radio'
     | 'select'
-  name: string
+    | 'hidden'
+  name?: string
   id?: string
   min?: string
   max?: string
@@ -60,9 +53,23 @@ export interface InputCheckbox extends InputTemplate {
 
 export interface InputSelect extends InputTemplate {
   value?: string
-  options: {
+  options?: {
     label: string
     value: string
   }[]
   top?: boolean
+}
+
+export type FieldsExt = Record<
+  string,
+  Partial<InputText | InputCheckbox | InputSelect>
+>
+
+export interface Form {
+  name: string
+  model: Record<string, InputValue>
+  fieldsExt?: FieldsExt
+  id?: string
+  buttonLabel?: string
+  submitting?: boolean
 }

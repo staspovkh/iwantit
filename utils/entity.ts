@@ -1,3 +1,5 @@
+import type { InputValue } from "~/types"
+
 export const getEntityNewData = <T extends Record<string, any>>(
   data: Partial<T>,
   item?: T,
@@ -26,4 +28,26 @@ export const getEntityNewData = <T extends Record<string, any>>(
     return undefined
   }
   return data
+}
+
+export const entityToForm = <T extends Record<string, unknown>>(
+  entity?: T,
+  skip = ['id'],
+) => {
+  type Result = Record<keyof T, InputValue>
+  const result: Partial<Result> = {}
+  for (const k in entity) {
+    const key = k as keyof Result
+    const value = entity[key]
+    if (!skip?.includes(String(key))) {
+      if (Array.isArray(value)) {
+        result[key] = value.join(', ')
+      } else if (typeof value === 'boolean') {
+        result[key] = value
+      } else {
+        result[key] = String(value || '')
+      }
+    }
+  }
+  return result
 }

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { InputCheckbox, InputText } from '~/types'
+import type { InputCheckbox, InputSelect, InputText } from '~/types'
 import type { Input } from '#components'
 
-const props = defineProps<InputText | InputCheckbox>()
+const props = defineProps<InputText | InputCheckbox | InputSelect>()
 
 const formFieldRef = ref<typeof Input>()
 const formFieldComponent = computed(() => {

@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import type { Wishlist } from '~/types/entities'
 
-const emit = defineEmits<{ submitted: [Partial<Wishlist>] }>()
+const defaultModel = {
+  name: '',
+  public: false,
+}
+
+const emit = defineEmits<{ submitted: [typeof defaultModel] }>()
 const props = defineProps<{ wishlist?: Wishlist }>()
 
-const { model, submitForm } = useEntityForm<Wishlist>(
-  {
-    name: '',
-    public: false,
-  },
-  toRef(props, 'wishlist'),
+const { model, submitForm } = useEntityForm<typeof defaultModel>(
+  defaultModel,
+  computed(() => entityToForm<Omit<Wishlist, 'id'>>(props.wishlist)),
   emit,
 )
 </script>

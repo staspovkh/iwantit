@@ -39,6 +39,7 @@ const isExternal = computed(
     ]"
     :target="isExternal ? '_blank' : undefined"
     :rel="isExternal ? 'noopener noreferrer' : undefined"
+    :type="$attrs.type ?? (to ? undefined : 'button')"
   >
     <Icon v-if="icon" :name="icon" />
     <slot />
