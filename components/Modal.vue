@@ -3,6 +3,7 @@ defineEmits<{ close: [] }>()
 const props = defineProps<{
   title?: string
   open?: boolean
+  medium?: boolean
   loading?: boolean
 }>()
 useScrollLock(computed(() => props.open))
@@ -18,15 +19,19 @@ useScrollLock(computed(() => props.open))
   >
     <div
       :class="[
-        'relative w-full max-w-md max-h-[calc(100dvh-2.5rem)] m-5 p-5',
-        'rounded-2xl bg-white shadow-md text-black overflow-y-auto',
+        'relative w-full max-h-[calc(100dvh-2.5rem)] m-5 p-5',
+        'bg-white shadow-md overflow-y-auto',
+        {
+          'max-w-3xl': medium,
+          'max-w-md': !medium,
+        },
       ]"
       @click.stop
     >
       <div class="flex items-center justify-between mb-4">
         <p v-if="title" class="font-bold">{{ $t(title) }}</p>
         <Action
-          class="ml-auto"
+          class="ml-auto -mr-1 -my-1 p-1 bg-white rounded-full relative z-1"
           icon="ic:outline-close"
           :title="$t('global.close')"
           @click="$emit('close')"

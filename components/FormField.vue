@@ -26,6 +26,7 @@ defineExpose({
 </script>
 <template>
   <component :is="formFieldComponent" v-bind="$props" ref="formFieldRef">
+    <template #action><slot name="action" /></template>
     <slot />
   </component>
 </template>

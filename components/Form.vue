@@ -143,7 +143,9 @@ defineExpose({
       v-bind="field"
       ref="fieldRef"
       class="mb-6"
-    />
+    >
+      <template #action><slot :name="`${field.name}-action`" /></template>
+    </FormField>
     <Action
       v-if="buttonLabel"
       button

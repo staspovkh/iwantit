@@ -37,7 +37,6 @@ const fieldsExt = computed(() => ({
 }))
 
 const itemLoading = ref(false)
-const itemUrl = ref(toRef(props, 'item').value?.link || '')
 
 const updateModelFromUrl = async (url: string) => {
   itemLoading.value = true
@@ -64,21 +63,6 @@ onMounted(() => {
 </script>
 <template>
   <div>
-    <Input
-      name="page-url"
-      type="text"
-      placeholder="forms.link.placeholder"
-      class="grid grid-cols-[1fr_1.5rem] gap-2 mb-6"
-      :value="itemUrl"
-      @update:value="itemUrl = String($event)"
-    >
-      <Action
-        icon="ic:outline-refresh"
-        :title="$t('global.parse')"
-        :disabled="!itemUrl"
-        @click="updateModelFromUrl(itemUrl)"
-      />
-    </Input>
     <Form
       :class="[
         'transition-opacity duration-300',
@@ -91,6 +75,15 @@ onMounted(() => {
       name="wishlist-item"
       button-label="global.save"
       @submitted="submitForm($event as typeof defaultModel)"
-    />
+    >
+      <template #link-action>
+        <Action
+          icon="ic:outline-refresh"
+          :title="$t('global.parse')"
+          :disabled="!model.link"
+          @click="updateModelFromUrl(model.link)"
+        />
+      </template>
+    </Form>
   </div>
 </template>

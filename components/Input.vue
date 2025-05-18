@@ -131,6 +131,7 @@ defineExpose({
           @compositionupdate="onCompositionUpdate"
           @animationstart="onAutofill()"
         />
+        <slot name="action" />
       </div>
     </template>
     <slot />

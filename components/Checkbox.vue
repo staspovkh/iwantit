@@ -151,10 +151,7 @@ defineExpose({
         </span>
       </template>
     </label>
-    <div
-      v-if="error && errorMessage"
-      class="mt-2 font-bold text-md/4 text-error ml-8"
-    >
+    <div v-if="error && errorMessage" class="mt-2 font-bold text-error ml-8">
       {{ errorMessage }}
     </div>
   </div>

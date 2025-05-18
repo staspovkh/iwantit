@@ -2,131 +2,101 @@
 import type { WishlistItem } from '~/types/entities'
 
 defineEmits<{
+  details: []
   remove: []
   edit: []
   complete: [boolean]
   'reserve:add': []
   'reserve:remove': []
 }>()
-const props = defineProps<{
+defineProps<{
   item: WishlistItem
   actions?: boolean
   preload?: boolean
 }>()
-
-const icon = computed(() => {
-  switch (props.item.level) {
-    case 1:
-      return 'ic:baseline-sentiment-satisfied-alt'
-    case 2:
-      return 'ic:baseline-sentiment-very-satisfied'
-    default:
-      return 'ic:baseline-sentiment-satisfied'
-  }
-})
+const showDetails = ref(false)
+const openDetails = () => {
+  showDetails.value = true
+}
+const closeDetails = () => {
+  showDetails.value = false
+}
 </script>
 <template>
-  <div
-    :class="[
-      'flex flex-col',
-      'bg-white border rounded-2xl transition-shadow duration-300',
-      'shadow-2xl shadow-black/10 hover:shadow-black/30 ',
-    ]"
-  >
-    <div
-      :class="[
-        'relative',
-        {
-          'opacity-40': item.completed,
-        },
-      ]"
-    >
+  <div>
+    <div class="relative">
       <Action
-        class="w-full rounded-t-2xl overflow-hidden"
-        :to="item.link"
+        class="w-full bg-white rounded-xl overflow-hidden"
         :title="item.name"
+        @click="openDetails()"
       >
         <Image
-          class="flex-1 aspect-square"
+          :class="[
+            'flex-1 aspect-square',
+            {
+              'opacity-50 grayscale': item.completed || item.reserve,
+            },
+          ]"
           :src="item.picture?.[0]"
           :alt="item.name"
           :preload="preload"
         />
       </Action>
-      <Icon :name="icon" class="absolute top-2 right-2 text-orange-500" />
-    </div>
-    <div class="p-4">
-      <div class="flex items-start justify-between gap-2">
-        <Action
-          :class="[
-            'font-semibold text-base/normal mr-auto',
-            { 'opacity-40': item.completed },
-          ]"
-          :to="item.link"
-        >
-          {{ item.name }}
-        </Action>
-        <template v-if="actions">
-          <Action
-            :disabled="item.completed"
-            icon="ic:outline-edit"
-            :title="$t('global.edit')"
-            @click="$emit('edit')"
-          />
-          <Action
-            :icon="
-              item.completed
-                ? 'ic:outline-unpublished'
-                : 'ic:outline-check-circle'
-            "
-            :title="$t(item.completed ? 'global.unpublish' : 'global.publish')"
-            @click="$emit('complete', !item.completed)"
-          />
-          <Action
-            icon="ic:outline-delete-forever"
-            :title="$t('global.remove')"
-            @click="$emit('remove')"
-          />
-        </template>
-      </div>
+      <WishlistItemStatus :item="item" class="absolute top-3 left-3" />
+      <WishlistItemLevel :item="item" class="absolute bottom-3 right-3" />
       <div
-        :class="[
-          {
-            'opacity-40': item.completed,
-          },
-        ]"
+        v-if="actions"
+        class="absolute top-0 right-0 flex items-start gap-2 p-3 bg-white rounded-tr-xl rounded-bl-xl"
       >
-        <p v-if="item.price" class="mt-2 font-semibold text-red-700">
+        <Action
+          icon="ic:outline-edit"
+          :title="$t('global.edit')"
+          @click="$emit('edit')"
+        />
+        <Action
+          :icon="
+            item.completed
+              ? 'ic:outline-unpublished'
+              : 'ic:outline-check-circle'
+          "
+          :title="$t(item.completed ? 'global.unpublish' : 'global.publish')"
+          @click="$emit('complete', !item.completed)"
+        />
+        <Action
+          icon="ic:outline-delete-forever"
+          :title="$t('global.remove')"
+          @click="$emit('remove')"
+        />
+      </div>
+    </div>
+    <div class="mt-3 text-sm">
+      <div class="flex items-start gap-2">
+        <h2 @click="openDetails()">
+          {{ item.name }}
+        </h2>
+        <Action
+          class="-my-0.5 ml-auto"
+          icon="ic:outline-shopping-cart"
+          :title="$t('global.details')"
+          @click="openDetails()"
+        />
+      </div>
+      <div>
+        <p v-if="item.price" class="mt-1 font-bold">
           {{ Number(item.price) }} {{ item.currency }}
         </p>
-        <p v-if="item.description" class="mt-2 text-sm text-black/60">
-          {{ item.description }}
-        </p>
       </div>
     </div>
-    <div
-      class="min-h-18 flex items-center justify-center p-4 pt-2 mt-auto font-bold"
-    >
-      <template v-if="item.completed">{{ $t('global.completed') }}</template>
-      <template v-else-if="item.reserve">
-        <span>{{ $t('global.reserved') }}</span>
-        <Action
-          v-if="actions"
-          class="ml-auto"
-          icon="ic:outline-delete-forever"
-          :title="$t('global.unreserve')"
-          @click="$emit('reserve:remove')"
-        />
-      </template>
-      <Action
-        v-else
-        class="w-full"
-        button
-        secondary
-        @click="$emit('reserve:add')"
-      >
-        {{ $t('global.reserve') }}
-      </Action>
-    </div>
+    <WishlistItemModal
+      :item="item"
+      :open="showDetails"
+      :actions="actions"
+      @close="closeDetails()"
+      @remove="$emit('remove')"
+      @edit="$emit('edit')"
+      @complete="$emit('complete', $event)"
+      @reserve:add="$emit('reserve:add')"
+      @reserve:remove="$emit('reserve:remove')"
+    />
   </div>
 </template>

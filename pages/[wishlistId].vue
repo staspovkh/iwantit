@@ -190,7 +190,7 @@ definePageMeta({
       </ul>
       <div
         v-else
-        class="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-4 mt-4"
+        class="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-x-4 gap-y-8 mt-4"
       >
         <WishlistItem
           v-for="(item, index) in items"
@@ -217,7 +217,7 @@ definePageMeta({
       </Modal>
       <Modal
         v-if="itemToReserve"
-        title="Reserve"
+        :title="$t('global.reserve')"
         open
         @close="closeItemReserve()"
       >

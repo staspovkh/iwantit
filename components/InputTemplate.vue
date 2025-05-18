@@ -23,18 +23,15 @@ const inputClassName = computed(() => [
 
 <template>
   <div :class="$attrs.class">
-    <label v-if="label" class="block mb-2 font-bold text-md/4" :for="fieldId">
+    <label v-if="label" class="block mb-2 font-bold" :for="fieldId">
       {{ $t(label) }}
       <span v-if="required" class="text-error">*</span>
     </label>
     <slot name="content-input" :class-name="inputClassName" />
-    <div
-      v-if="error && errorMessage"
-      class="mt-2 font-bold text-md/4 text-error"
-    >
+    <div v-if="error && errorMessage" class="mt-2 font-bold text-error">
       {{ errorMessage }}
     </div>
-    <div v-if="caption" class="mt-2 font-bold text-md/4 text-black/60">
+    <div v-if="caption" class="mt-2 font-bold text-black/60">
       {{ $t(caption) }}
     </div>
     <slot />

@@ -5,6 +5,8 @@
 
   --color-main: #1E1E2F;
   --color-error: #DE350B;
+
+  --shadow-top: 0 -1rem 1rem 0 rgba(0, 0, 0, 0.1);
 }
 
 @layer base {
@@ -17,7 +19,8 @@
   }
 
   body {
-    @apply bg-gray-100 text-main;
+    @apply min-h-screen transition-all;
+    @apply bg-sky-100 bg-gradient-to-b from-sky-100 to-orange-100 text-main;
   }
 }
 

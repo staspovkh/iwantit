@@ -15,7 +15,7 @@
         </ClientOnly>
       </div>
     </header>
-    <div class="max-w-[90rem] mx-auto px-4 py-6">
+    <div class="max-w-[90rem] mx-auto px-4 py-12">
       <slot />
     </div>
   </div>

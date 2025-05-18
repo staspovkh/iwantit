@@ -6,7 +6,7 @@ defineProps<{
 </script>
 <template>
   <div>
-    <h1 v-if="title" class="text-center text-2xl font-bold mb-2">
+    <h1 v-if="title" class="text-center text-2xl font-bold mb-8">
       {{ title }}
     </h1>
     <div v-if="$slots['actions']" class="flex gap-2 justify-end mb-2">
