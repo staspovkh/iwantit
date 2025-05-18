@@ -18,7 +18,7 @@ export const getEntityNewData = <T extends Record<string, unknown>>(
       .reduce(
         (acc, key) => ({
           ...acc,
-          [key]: data[key],
+          [key]: typeof data[key] === 'undefined' ? null : data[key],
         }),
         {},
       )
@@ -40,10 +40,14 @@ export const entityToForm = <T extends Record<string, unknown>>(
     const key = k as keyof Result
     const value = entity[key]
     if (!skip?.includes(String(key))) {
-      if (Array.isArray(value) || typeof value === 'boolean') {
+      if (
+        Array.isArray(value) ||
+        typeof value === 'string' ||
+        typeof value === 'boolean'
+      ) {
         result[key] = value
-      } else {
-        result[key] = String(value || '')
+      } else if (typeof value === 'number') {
+        result[key] = String(value)
       }
     }
   }

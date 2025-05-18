@@ -3,6 +3,7 @@ import type { Wishlist } from '~/types/entities'
 
 const defaultModel = {
   name: '',
+  slug: '',
   public: false,
 }
 

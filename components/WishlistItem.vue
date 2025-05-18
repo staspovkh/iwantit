@@ -42,14 +42,13 @@ const icon = computed(() => {
       ]"
     >
       <Action
-        v-if="item.picture?.[0]"
         class="w-full rounded-t-2xl overflow-hidden"
         :to="item.link"
         :title="item.name"
       >
         <Image
           class="flex-1 aspect-square"
-          :src="item.picture[0]"
+          :src="item.picture?.[0]"
           :alt="item.name"
           :preload="preload"
         />

@@ -57,9 +57,9 @@ defineExpose({
       { 'flex justify-between items-center': fancy },
     ]"
   >
-    <span v-if="fancy" class="self-center">
+    <span v-if="fancy && label" class="self-center">
       <span v-if="required" class="text-error">* </span>
-      {{ label }}
+      {{ $t(label) }}
     </span>
     <label :class="['flex gap-2 items-start', { 'cursor-pointer': !disabled }]">
       <input
@@ -98,7 +98,7 @@ defineExpose({
               },
             ]"
           >
-            yes
+            {{ $t('global.yes') }}
           </span>
           <span
             :class="[
@@ -115,7 +115,7 @@ defineExpose({
               },
             ]"
           >
-            no
+            {{ $t('global.no') }}
           </span>
         </span>
       </span>
@@ -145,9 +145,9 @@ defineExpose({
             }"
           />
         </div>
-        <span class="self-center">
+        <span v-if="label" class="self-center">
           <span v-if="required" class="text-error">* </span>
-          {{ label }}
+          {{ $t(label) }}
         </span>
       </template>
     </label>

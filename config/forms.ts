@@ -7,6 +7,12 @@ export const fields: Record<string, Input> = {
     required: true,
     minlength: 2,
   },
+  slug: {
+    type: 'text',
+    label: 'forms.slug',
+    minlength: 2,
+    pattern: '[a-z0-9_\\-]+',
+  },
   description: {
     type: 'textarea',
     label: 'forms.description',

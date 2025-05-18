@@ -2,7 +2,11 @@ import { getEntity } from '~/server/utils/entity'
 
 export default defineEventHandler(async (event) => {
   const { id } = await readBody(event)
-  const { ok, payload: wishlist } = await getEntity(event, 'wishlist', {
+  const {
+    ok,
+    payload: wishlist,
+    error,
+  } = await getEntity(event, 'wishlist', {
     id,
     children: ['item'],
   })
@@ -24,5 +28,6 @@ export default defineEventHandler(async (event) => {
   return {
     ok: false,
     payload: null,
+    error,
   }
 })

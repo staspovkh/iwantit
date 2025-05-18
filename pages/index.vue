@@ -112,7 +112,7 @@ definePageMeta({
         >
           <Action
             :class="['mr-auto', { 'pointer-events-none': sortingMode }]"
-            :to="`/${wishlist.id}`"
+            :to="`/${wishlist.slug || wishlist.id}`"
             >{{ wishlist.name }}</Action
           >
           <Action

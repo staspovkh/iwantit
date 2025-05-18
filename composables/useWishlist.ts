@@ -5,9 +5,9 @@ type WishlistExt = Wishlist & {
   tag?: WishlistTag[]
 }
 
-export function useWishlist(wishlistId: string) {
+export function useWishlist(wishlistIdOrSlug: string) {
   const wishlist = useState<WishlistExt | null>(
-    `wishlist-${wishlistId}`,
+    `wishlist-${wishlistIdOrSlug}`,
     () => null,
   )
   const wishlistLoading = ref(false)
@@ -18,7 +18,7 @@ export function useWishlist(wishlistId: string) {
       const { payload } = await $fetch(`/api/wishlist`, {
         method: 'POST',
         body: {
-          id: wishlistId,
+          id: wishlistIdOrSlug,
         },
       })
       if (payload) {
@@ -48,7 +48,7 @@ export function useWishlist(wishlistId: string) {
         })) ?? [],
     ),
     {
-      key: wishlistId,
+      key: wishlistIdOrSlug,
       callback: getWishlist,
     },
   )
@@ -56,7 +56,7 @@ export function useWishlist(wishlistId: string) {
   const loading = computed(() => wishlistLoading.value || itemLoading.value)
 
   const addItem = async (item: Partial<WishlistItem>) => {
-    await addItemEntity({ ...item, wishlist: wishlistId })
+    await addItemEntity({ ...item, wishlist: wishlist.value?.id })
   }
 
   const categoryId = ref<string | undefined>()

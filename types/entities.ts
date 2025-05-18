@@ -3,8 +3,9 @@ import type { Database } from '~/types/database.types'
 
 const wishlistSchema = z.object({
   id: z.string(),
-  name: z.string().nullish(),
   order: z.number().nullish(),
+  name: z.string().nullish(),
+  slug: z.string().nullish(),
   public: z.boolean().optional(),
   user: z.string().nullish(),
 })

@@ -79,7 +79,6 @@ onMounted(() => {
         @click="updateModelFromUrl(itemUrl)"
       />
     </Input>
-    <pre>{{ fieldsExt }}</pre>
     <Form
       :class="[
         'transition-opacity duration-300',

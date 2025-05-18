@@ -7,6 +7,12 @@ import {
   entityTypeSchema,
 } from '~/types/entities'
 
+const isValidUUID = (uuid: string) => {
+  const uuidRegex =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+  return uuidRegex.test(uuid)
+}
+
 const getEntitySchema = (type: EntityType) =>
   entityPayloadSchema.shape[type].element
 
@@ -83,10 +89,15 @@ export const getEntity = async (
     entityKeys.push(`${child.table} (${child.keys.join(', ')})`)
   }
 
+  const orConditions = [`slug.eq.${id}`]
+  if (isValidUUID(id)) {
+    orConditions.push(`id.eq.${id}`)
+  }
+
   const query = event.context.supabase.client
     .from(entityTables[entityType])
-    .select(entityKeys.join(', '))
-    .eq('id', id)
+    .select(entityKeys.join(','))
+    .or(orConditions.join(','))
 
   for (const child of childrenData) {
     query
@@ -123,6 +134,7 @@ export const getEntity = async (
   return {
     ok: false,
     payload: null,
+    error,
   }
 }
 
