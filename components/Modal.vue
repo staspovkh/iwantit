@@ -24,11 +24,11 @@ useScrollLock(computed(() => props.open))
       @click.stop
     >
       <div class="flex items-center justify-between mb-4">
-        <p v-if="title" class="font-bold">{{ title }}</p>
+        <p v-if="title" class="font-bold">{{ $t(title) }}</p>
         <Action
           class="ml-auto"
           icon="ic:outline-close"
-          title="Close"
+          :title="$t('global.close')"
           @click="$emit('close')"
         />
       </div>

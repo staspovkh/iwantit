@@ -1,4 +1,4 @@
-export type InputValue = string | boolean
+export type InputValue = string | string[] | boolean
 
 export type FormModel<T> = Record<keyof T, InputValue>
 
@@ -22,6 +22,7 @@ export interface InputTemplate {
     | 'radio'
     | 'select'
     | 'hidden'
+    | 'tag'
   name?: string
   id?: string
   min?: string
@@ -52,18 +53,20 @@ export interface InputCheckbox extends InputTemplate {
 }
 
 export interface InputSelect extends InputTemplate {
-  value?: string
+  value?: string | string[]
   options?: {
     label: string
     value: string
   }[]
   top?: boolean
+  mode?: 'single' | 'multiple' | 'tags'
+  searchable?: boolean
+  createOption?: boolean
 }
 
-export type FieldsExt = Record<
-  string,
-  Partial<InputText | InputCheckbox | InputSelect>
->
+export type Input = InputText | InputCheckbox | InputSelect
+
+export type FieldsExt = Record<string, Partial<Input>>
 
 export interface Form {
   name: string

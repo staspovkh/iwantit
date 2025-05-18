@@ -8,7 +8,7 @@ const defaultModel = {
   picture: '',
   price: '',
   currency: '',
-  tag: '',
+  tag: [],
   level: '0',
 }
 
@@ -25,6 +25,16 @@ const { model, updateModel } = useEntityForm<typeof defaultModel>(
   defaultModel,
   computed(() => item2Form(props.item)),
 )
+const { tags, getTags } = useTags()
+
+const fieldsExt = computed(() => ({
+  tag: {
+    options: tags.value.map((tag) => ({
+      label: tag.name ?? tag.id,
+      value: tag.name ?? tag.id,
+    })),
+  },
+}))
 
 const itemLoading = ref(false)
 const itemUrl = ref(toRef(props, 'item').value?.link || '')
@@ -44,28 +54,32 @@ const submitForm = (data: typeof defaultModel) => {
     picture: data.picture ? [data.picture] : undefined,
     price: data.price ? Number(data.price) : undefined,
     level: data.level ? Number(data.level) : undefined,
-    tag: data.tag?.split(',').map((tag) => tag.trim()),
   }
   emit('submitted', formData)
 }
+
+onMounted(() => {
+  getTags()
+})
 </script>
 <template>
   <div>
     <Input
       name="page-url"
       type="text"
-      placeholder="Enter page URL"
+      placeholder="forms.link.placeholder"
       class="grid grid-cols-[1fr_1.5rem] gap-2 mb-6"
       :value="itemUrl"
       @update:value="itemUrl = String($event)"
     >
       <Action
         icon="ic:outline-refresh"
-        title="Parse"
+        :title="$t('global.parse')"
         :disabled="!itemUrl"
         @click="updateModelFromUrl(itemUrl)"
       />
     </Input>
+    <pre>{{ fieldsExt }}</pre>
     <Form
       :class="[
         'transition-opacity duration-300',
@@ -74,8 +88,9 @@ const submitForm = (data: typeof defaultModel) => {
         },
       ]"
       :model="model"
+      :fields-ext="fieldsExt"
       name="wishlist-item"
-      :button-label="item ? 'update wishlist item' : 'add wishlist item'"
+      button-label="global.save"
       @submitted="submitForm($event as typeof defaultModel)"
     />
   </div>

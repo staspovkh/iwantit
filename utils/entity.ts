@@ -1,6 +1,6 @@
-import type { InputValue } from "~/types"
+import type { InputValue } from '~/types'
 
-export const getEntityNewData = <T extends Record<string, any>>(
+export const getEntityNewData = <T extends Record<string, unknown>>(
   data: Partial<T>,
   item?: T,
 ): Partial<T> | undefined => {
@@ -10,9 +10,9 @@ export const getEntityNewData = <T extends Record<string, any>>(
       .filter((key) => {
         return (
           requiredKeys.includes(String(key)) ||
-          (Array.isArray(data[key]) &&
-            !areArraysSimilar(data[key], item[key])) ||
-          data[key] !== item[key]
+          (Array.isArray(data[key]) && Array.isArray(item[key])
+            ? !areArraysSimilar(data[key], item[key])
+            : data[key] !== item[key])
         )
       })
       .reduce(
@@ -40,9 +40,7 @@ export const entityToForm = <T extends Record<string, unknown>>(
     const key = k as keyof Result
     const value = entity[key]
     if (!skip?.includes(String(key))) {
-      if (Array.isArray(value)) {
-        result[key] = value.join(', ')
-      } else if (typeof value === 'boolean') {
+      if (Array.isArray(value) || typeof value === 'boolean') {
         result[key] = value
       } else {
         result[key] = String(value || '')

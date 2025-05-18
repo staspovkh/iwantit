@@ -43,7 +43,7 @@ const fieldsExt = computed<FieldsExt>(() => {
       :model="model"
       :fields-ext="fieldsExt"
       name="wishlist-item-reserve"
-      button-label="Reserve"
+      button-label="global.reserve"
       @submitted="submitForm"
     />
   </div>

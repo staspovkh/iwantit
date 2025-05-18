@@ -1,14 +1,13 @@
 <script lang="ts" setup>
-import type { InputSelect } from '~/types'
+import type { InputSelect, InputValue } from '~/types'
 import Multiselect from '@vueform/multiselect'
 
-const props = withDefaults(defineProps<InputSelect>(), {
-  value: '',
-})
+const props = defineProps<InputSelect>()
 const emit = defineEmits<{
-  'update:value': [string]
+  'update:value': [string | string[]]
 }>()
 
+const { t } = useI18n()
 const {
   value: reactiveValue,
   fieldId,
@@ -21,18 +20,49 @@ const {
 const multiselect = ref<InstanceType<typeof Multiselect>>()
 const open = ref(false)
 
+const selectModel = ref<string | string[]>('')
+watch(
+  () => props.mode,
+  (mode) => {
+    selectModel.value = mode === 'tags' ? [] : ''
+  },
+  { immediate: true },
+)
+
+const options = computed(() =>
+  props.options?.map((option) => ({
+    ...option,
+    label: t(option.label),
+  })),
+)
+
+const areValuesIdentical = (a?: InputValue, b?: InputValue) => {
+  return Array.isArray(a) && Array.isArray(b) ? areArraysSimilar(a, b) : a === b
+}
+
 watch(
   () => props.value,
   (newVal) => {
-    if (newVal !== reactiveValue.value) {
-      reactiveValue.value = newVal ?? ''
+    if (newVal) {
+      if (!areValuesIdentical(newVal, reactiveValue.value)) {
+        reactiveValue.value = newVal
+      }
+      if (!areValuesIdentical(newVal, selectModel.value)) {
+        selectModel.value = newVal
+      }
     }
   },
+  { immediate: true },
 )
 
-const onChange = (value: string) => {
+const onChange = (value: string | string[]) => {
   handleChange(value, Boolean(value))
-  emit('update:value', String(reactiveValue.value))
+  emit(
+    'update:value',
+    Array.isArray(reactiveValue.value)
+      ? reactiveValue.value
+      : String(reactiveValue.value),
+  )
 }
 
 const onOpen = () => {
@@ -61,7 +91,7 @@ const multiselectClasses = computed(() => {
     containerOpenTop: 'rounded-t-none border-black/70',
     containerActive: '',
     wrapper:
-      'relative w-full flex items-center justify-end outline-none rounded-md' +
+      'relative w-full flex items-center outline-none' +
       (props.disabled ? '' : ' cursor-pointer'),
     singleLabel:
       'flex items-center absolute inset-0 pl-4 pr-8 pointer-events-none',
@@ -69,38 +99,36 @@ const multiselectClasses = computed(() => {
       'overflow-ellipsis overflow-hidden block text-black whitespace-nowrap max-w-full',
     multipleLabel:
       'flex items-center absolute inset-0 pl-4 pr-8 pointer-events-none',
-    tags: '',
+    tags: 'flex flex-wrap items-center gap-2 grow-1 shrink-1 px-3 py-2 text-black',
     tag: '',
     tagDisabled: '',
     tagRemove: '',
     tagRemoveIcon: '',
-    tagsSearchWrapper: '',
-    tagsSearch: '',
-    tagsSearchCopy: '',
+    tagsSearchWrapper: 'grow-1 shrink-1 h-full relative',
+    tagsSearch: 'absolute inset-0 w-full outline-none',
+    tagsSearchCopy: 'inline-block h-px invisible w-full whitespace-pre-wrap',
     placeholder:
       'flex items-center absolute inset-0 pl-4 pr-8 leading-none pointer-events-none',
     caret:
-      'text-black/70 mr-3 pointer-events-none transition-transform duration-150',
+      'text-black/70 mr-3 ml-auto pointer-events-none transition-transform duration-150',
     clear: '',
     clearIcon: '',
     spinner: '',
     dropdown:
       'absolute -inset-x-px z-20 overflow-auto flex flex-col gap-3 max-h-[15rem] ' +
       'border-x border-black/70 bg-white ' +
+      'before:block before:h-px before:bg-black/10 before:sticky after:block ' +
       (props.top
-        ? 'bottom-full border-t rounded-t-lg'
+        ? 'bottom-full border-t rounded-t-lg before:order-1 after:-order-1'
         : 'top-full border-b rounded-b-lg'),
     dropdownTop: '',
     dropdownHidden: 'hidden',
-    options:
-      'flex flex-col my-3 p-0 list-none ' +
-      'before:block before:h-px before:bg-black/10 before:sticky before:inset-0 ' +
-      (props.top ? 'mb-0 before:mt-3 before:order-1' : 'mt-0 before:mb-3'),
+    options: 'flex flex-col p-0 list-none',
     optionsTop: '',
     option:
       'flex items-center justify-between gap-2 px-4 py-2 cursor-pointer ' +
       'after:h-2.5 after:w-1.5 after:rotate-45',
-    optionPointed: 'bg-black/5',
+    optionPointed: 'bg-black/5 text-black',
     optionSelected:
       'font-bold text-black after:border-b-2 after:border-r-2 after:border-green-500',
     optionDisabled: 'text-black/30 cursor-not-allowed',
@@ -108,10 +136,11 @@ const multiselectClasses = computed(() => {
       'bg-black/5 font-bold text-black after:border-b-2 after:border-r-2 after:border-green-500',
     optionSelectedDisabled:
       'font-bold text-black/30 cursor-not-allowed after:border-b-2 after:border-r-2',
-    noOptions: 'px-3 pb-3',
-    noResults: '',
+    noOptions: 'px-4',
+    noResults: 'px-4 ' + (props.top ? 'mb-3' : 'mt-3'),
     fakeInput: 'sr-only',
     spacer: 'h-[3rem] -my-px',
+    assist: 'sr-only',
   }
 })
 
@@ -141,6 +170,7 @@ defineExpose({
       <Multiselect
         :id="fieldId"
         ref="multiselect"
+        v-model="selectModel"
         :class="[
           'asf-scrollbar',
           'text-left font-medium outline-none select-none',
@@ -157,10 +187,10 @@ defineExpose({
         :options="options"
         :required="required"
         :disabled="disabled"
-        :placeholder="placeholder"
+        :placeholder="placeholder ? $t(placeholder) : undefined"
         :name="fieldName"
         :aria="{
-          'aria-label': label,
+          'aria-label': label ? $t(label) : label,
           'aria-disabled': disabled,
           'aria-invalid': !!errorMessage,
           'aria-errormessage':
@@ -168,6 +198,10 @@ defineExpose({
           'aria-multiselectable': null,
         }"
         :classes="multiselectClasses"
+        :mode="mode"
+        :searchable="searchable"
+        :create-option="createOption"
+        :no-results-text="$t('search.noresults')"
         native-support
         @change="onChange"
         @open="onOpen"
@@ -183,6 +217,22 @@ defineExpose({
             ]"
             name="ic:baseline-keyboard-arrow-down"
           />
+        </template>
+        <template #tag="{ option, handleTagRemove, disabled }">
+          <span
+            :class="['flex items-center gap-1 rounded-sm bg-black/5 px-2 py-1']"
+            tabindex="-1"
+            @keyup.enter="handleTagRemove(option, $event)"
+          >
+            <span>{{ option.label }}</span>
+            <Action
+              class="text-black/60"
+              icon="ic:outline-close"
+              :title="$t('global.remove')"
+              :disabled="disabled || option.disabled"
+              @click.stop="handleTagRemove(option, $event)"
+            />
+          </span>
         </template>
       </Multiselect>
     </template>

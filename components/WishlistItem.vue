@@ -71,7 +71,7 @@ const icon = computed(() => {
           <Action
             :disabled="item.completed"
             icon="ic:outline-edit"
-            title="Edit"
+            :title="$t('global.edit')"
             @click="$emit('edit')"
           />
           <Action
@@ -80,12 +80,12 @@ const icon = computed(() => {
                 ? 'ic:outline-unpublished'
                 : 'ic:outline-check-circle'
             "
-            title="Remove"
+            :title="$t(item.completed ? 'global.unpublish' : 'global.publish')"
             @click="$emit('complete', !item.completed)"
           />
           <Action
             icon="ic:outline-delete-forever"
-            title="Remove"
+            :title="$t('global.remove')"
             @click="$emit('remove')"
           />
         </template>
@@ -108,14 +108,14 @@ const icon = computed(() => {
     <div
       class="min-h-18 flex items-center justify-center p-4 pt-2 mt-auto font-bold"
     >
-      <template v-if="item.completed"> Completed </template>
+      <template v-if="item.completed">{{ $t('global.completed') }}</template>
       <template v-else-if="item.reserve">
-        <span>Reserved</span>
+        <span>{{ $t('global.reserved') }}</span>
         <Action
           v-if="actions"
           class="ml-auto"
           icon="ic:outline-delete-forever"
-          title="Remove reservation"
+          :title="$t('global.unreserve')"
           @click="$emit('reserve:remove')"
         />
       </template>
@@ -126,7 +126,7 @@ const icon = computed(() => {
         secondary
         @click="$emit('reserve:add')"
       >
-        Reserve
+        {{ $t('global.reserve') }}
       </Action>
     </div>
   </div>

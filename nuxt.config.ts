@@ -26,6 +26,7 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/scripts',
     'nuxt-vue3-google-signin',
+    '@nuxtjs/i18n',
   ],
   hub: {
     browser: true,
@@ -47,6 +48,10 @@ export default defineNuxtConfig({
   googleSignIn: {
     clientId:
       '64929895773-qrit0c1f2rljcof7jjogb7ik6vg7gdjh.apps.googleusercontent.com',
+  },
+  i18n: {
+    locales: [{ code: 'uk', language: 'uk-UA', file: 'uk-UA.json' }],
+    defaultLocale: 'uk',
   },
   experimental: {
     defaults: {

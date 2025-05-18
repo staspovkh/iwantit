@@ -4,7 +4,12 @@
     <NuxtLoadingIndicator />
     <header id="siteHeader" class="bg-white shadow-md">
       <div class="max-w-[90rem] mx-auto p-6 flex items-center gap-4">
-        <Action class="mr-auto" to="/" icon="ic:outline-home" title="Home" />
+        <Action
+          class="mr-auto"
+          to="/"
+          icon="ic:outline-home"
+          :title="$t('global.home')"
+        />
         <ClientOnly>
           <UserLogin />
         </ClientOnly>

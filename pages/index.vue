@@ -69,7 +69,11 @@ definePageMeta({
 </script>
 <template>
   <div>
-    <WishlistLayout v-if="user" :title="'Wish lists'" :loading="loading">
+    <WishlistLayout
+      v-if="user"
+      :title="$t('wishlist.title')"
+      :loading="loading"
+    >
       <template #actions>
         <Action icon="ic:outline-bookmark-border" :to="`/tags`" />
         <Action
@@ -82,12 +86,12 @@ definePageMeta({
           ]"
           :disabled="wishlists.length < 2"
           icon="ic:outline-repeat"
-          title="Sort tags"
+          :title="$t('global.sort')"
           @click="toggleSorting()"
         />
         <Action
           icon="ic:outline-plus"
-          title="Add new item"
+          :title="$t('global.add')"
           @click="openModal()"
         />
       </template>
@@ -113,20 +117,20 @@ definePageMeta({
           >
           <Action
             icon="ic:outline-delete-forever"
-            title="Remove"
+            :title="$t('global.remove')"
             :disabled="sortingMode"
             @click="!sortingMode && removeWishlist(wishlist.id)"
           />
           <Action
             icon="ic:outline-edit"
-            title="Edit"
+            :title="$t('global.edit')"
             :disabled="sortingMode"
             @click="!sortingMode && openModal(wishlist)"
           />
         </li>
       </ul>
       <Modal
-        :title="wishlistToEdit ? 'Edit wishlist' : 'Add wishlist'"
+        :title="wishlistToEdit ? 'global.edit' : 'global.add'"
         :open="modalOpen"
         @close="closeModal()"
       >

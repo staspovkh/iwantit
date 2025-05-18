@@ -19,7 +19,7 @@ const { model, submitForm } = useEntityForm<typeof defaultModel>(
     <Form
       :model="model"
       name="wishlist-tag"
-      :button-label="tag ? 'update wishlist tag' : 'add wishlist tag'"
+      button-label="global.save"
       @submitted="submitForm"
     />
   </div>

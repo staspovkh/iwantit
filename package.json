@@ -21,6 +21,7 @@
     "@nuxt/image": "^1.10.0",
     "@nuxt/scripts": "^0.11.6",
     "@nuxthub/core": "^0.8.25",
+    "@nuxtjs/i18n": "^9.5.4",
     "@nuxtjs/supabase": "^1.5.0",
     "@tailwindcss/vite": "^4.1.5",
     "@unhead/vue": "^2.0.8",

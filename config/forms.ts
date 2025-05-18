@@ -1,73 +1,75 @@
-import type { InputCheckbox, InputSelect, InputText } from '~/types'
+import type { Input } from '~/types'
 
-export const fields: Record<string, InputText | InputCheckbox | InputSelect> = {
+export const fields: Record<string, Input> = {
   name: {
     type: 'text',
-    label: 'Name',
+    label: 'forms.name',
     required: true,
     minlength: 2,
   },
   description: {
     type: 'textarea',
-    label: 'Description',
+    label: 'forms.description',
   },
   picture: {
     type: 'text',
-    label: 'Image URL',
+    label: 'forms.picture',
   },
   price: {
     type: 'text',
-    label: 'Price',
-    placeholder: '0.00',
+    label: 'forms.price',
     minlength: 1,
     maxlength: 10,
   },
   currency: {
     type: 'text',
-    label: 'Currency',
-    placeholder: 'UAH',
+    label: 'forms.currency',
     minlength: 1,
     maxlength: 3,
   },
   brand: {
     type: 'text',
-    label: 'Brand',
+    label: 'forms.brand',
     minlength: 2,
   },
   tag: {
-    type: 'text',
-    label: 'Tag',
-    placeholder: 'tag1, tag2',
+    type: 'select',
+    label: 'forms.tags',
+    options: [],
+    mode: 'tags',
+    searchable: true,
+    createOption: true,
+    top: true,
   },
   link: {
     type: 'text',
-    label: 'Link',
+    label: 'forms.link.label',
     minlength: 2,
   },
   public: {
     type: 'checkbox',
-    label: 'Public',
+    label: 'forms.public',
     value: false,
     fancy: true,
   },
   level: {
     type: 'select',
-    label: 'level',
+    label: 'forms.level',
     options: [
-      { value: '0', label: '0' },
-      { value: '1', label: '1' },
-      { value: '2', label: '2' },
+      { value: '0', label: 'wishlist.level.0' },
+      { value: '1', label: 'wishlist.level.1' },
+      { value: '2', label: 'wishlist.level.2' },
     ],
     top: true,
   },
   reserve: {
     type: 'text',
-    label: 'Name',
+    label: 'forms.reserve',
     required: true,
     minlength: 2,
   },
   reserve_message: {
     type: 'textarea',
-    label: 'Message',
+    label: 'forms.reserve.message',
   },
 }

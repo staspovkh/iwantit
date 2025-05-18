@@ -134,7 +134,7 @@ definePageMeta({
       <template v-if="isOwner" #actions>
         <Action
           icon="ic:outline-edit"
-          title="Edit"
+          :title="$t('global.edit')"
           :disabled="sortingMode"
           @click="!sortingMode ? (editOpen = true) : void 0"
         />
@@ -148,13 +148,13 @@ definePageMeta({
           ]"
           :disabled="items.length < 2"
           icon="ic:outline-repeat"
-          title="Sort items"
+          :title="$t('global.sort')"
           @click="toggleSorting()"
         />
         <Action
           :disabled="sortingMode"
           icon="ic:outline-plus"
-          title="Add new item"
+          :title="$t('global.add')"
           @click="openItemEdit()"
         />
       </template>
@@ -206,7 +206,7 @@ definePageMeta({
         />
       </div>
       <Modal
-        title="Add wishlist item"
+        :title="itemToEdit ? 'global.edit' : 'global.add'"
         :open="itemEditOpen"
         @close="closeItemEdit()"
       >
@@ -227,7 +227,7 @@ definePageMeta({
         />
       </Modal>
       <Modal
-        title="Edit wishlist"
+        title="global.edit"
         :open="wishlist && editOpen"
         @close="editOpen = false"
       >

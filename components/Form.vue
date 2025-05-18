@@ -40,6 +40,7 @@ const fields = computed(() =>
       ...props.fieldsExt?.[name],
       name,
       value:
+        Array.isArray(values.value[name]) ||
         typeof values.value[name] === 'boolean'
           ? values.value[name]
           : String(values.value[name] || ''),
@@ -87,8 +88,14 @@ watch(
   },
   (newValues, oldValues) => {
     for (const [key, newVal] of Object.entries(newValues)) {
-      if (newVal !== oldValues[key] && typeof newVal !== 'undefined') {
-        setFieldValue(key, newVal, typeof oldValues[key] !== 'undefined')
+      const oldVal = oldValues[key]
+
+      if (
+        Array.isArray(newVal) && Array.isArray(oldVal)
+          ? !areArraysSimilar(newVal, oldVal)
+          : newVal !== oldVal && typeof newVal !== 'undefined'
+      ) {
+        setFieldValue(key, newVal, typeof oldVal !== 'undefined')
       }
     }
   },
@@ -143,7 +150,7 @@ defineExpose({
       type="submit"
       :disabled="!ready || submitting"
     >
-      {{ buttonLabel }}
+      {{ $t(buttonLabel) }}
     </Action>
     <slot />
   </form>
