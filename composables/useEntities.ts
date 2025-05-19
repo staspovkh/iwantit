@@ -5,6 +5,7 @@ export function useEntities<T extends { id: string; order?: number | null }>(
   data?: Ref<T[]>,
   options?: {
     key?: string
+    children?: string[]
     callback?: (_force?: boolean) => Promise<void>
   },
 ) {
@@ -30,7 +31,12 @@ export function useEntities<T extends { id: string; order?: number | null }>(
       loading.value = true
       if (!data) {
         try {
-          const { payload } = await $fetch(`/api/wishlist/${type}/my`)
+          const { payload } = await $fetch(`/api/wishlist/${type}/all`, {
+            method: 'POST',
+            body: {
+              children: options?.children,
+            },
+          })
           if (payload) {
             entities.value = payload as T[]
           }

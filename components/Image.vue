@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const props = withDefaults(
   defineProps<{
-    src?: string
+    src?: string | null
     srcset?: string
     sizes?: string
     format?: string

@@ -8,7 +8,7 @@ export function useWishlists() {
     add: addWishlist,
     remove: removeWishlist,
     sort: sortWishlists,
-  } = useEntities<Wishlist>('wishlist')
+  } = useEntities<Wishlist>('wishlist', undefined, { children: ['item'] })
 
   return {
     loading,

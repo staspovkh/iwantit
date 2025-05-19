@@ -18,6 +18,8 @@ const getEntitySchema = (type: EntityType) =>
 
 const getAllBodySchema = z.object({
   ids: z.array(z.string()).optional(),
+  public: z.boolean().optional(),
+  children: z.array(entityTypeSchema).optional(),
   filters: z
     .array(z.tuple([z.string(), z.enum(['in', 'eq']), z.unknown()]))
     .optional(),
@@ -28,18 +30,45 @@ export const getEntities = async (
   type?: string,
   body?: unknown,
 ) => {
-  const { ids, filters } = getAllBodySchema.parse(body ?? {})
+  const {
+    ids,
+    public: ePublic,
+    children,
+    filters,
+  } = getAllBodySchema.parse(body ?? {})
   const entityType = entityTypeSchema.parse(type)
   const entitySchema = getEntitySchema(entityType)
-  const keys = Object.keys(entitySchema.shape).join(', ')
+  const entityKeys = Object.keys(entitySchema.shape)
+
+  const childrenData = (children ?? []).map((type) => ({
+    type,
+    table: entityTables[type],
+    keys: Object.keys(getEntitySchema(type).shape),
+  }))
+  for (const child of childrenData) {
+    entityKeys.push(`${child.table} (${child.keys.join(', ')})`)
+  }
+
   const query = event.context.supabase.client
     .from(entityTables[entityType])
-    .select(keys)
+    .select(entityKeys.join(','))
     .order('order', { ascending: true })
     .order('created_at', { ascending: false })
 
+  for (const child of childrenData) {
+    query
+      .order('order', { ascending: true, referencedTable: child.table })
+      .order('created_at', {
+        ascending: false,
+        referencedTable: child.table,
+      })
+      .limit(1, { referencedTable: child.table })
+  }
+
   if (ids?.length) {
     query.in('id', ids)
+  } else if (ePublic) {
+    query.eq('public', true)
   } else {
     query.eq('user', event.context.supabase?.user?.id)
   }
@@ -52,9 +81,24 @@ export const getEntities = async (
   const { data, error } = await query
 
   if (!error && data) {
+    const { data: parsedData } = z
+      .array(entitySchema.merge(entityPayloadSchema.partial()))
+      .safeParse(
+        data.map((dataItem: Record<string, unknown>) => ({
+          ...dataItem,
+          ...childrenData.reduce(
+            (acc, child) => ({
+              ...acc,
+              [child.type]: dataItem[child.table],
+            }),
+            {},
+          ),
+        })),
+      )
+
     return {
-      ok: true,
-      payload: z.array(entitySchema).safeParse(data).data ?? [],
+      ok: Boolean(parsedData),
+      payload: parsedData,
     }
   }
 

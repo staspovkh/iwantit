@@ -63,7 +63,11 @@ definePageMeta({
 </script>
 <template>
   <div>
-    <WishlistLayout v-if="user" :title="$t('tags.title')" :loading="loading">
+    <WishlistLayout
+      v-if="user"
+      :title="$t('account.tags.title')"
+      :loading="loading"
+    >
       <template #actions>
         <Action
           :class="[

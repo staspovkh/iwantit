@@ -25,7 +25,7 @@ const isExternal = computed(
       'cursor-pointer flex items-center gap-2 transition-all duration-300',
       'disabled:pointer-events-none',
       {
-        'hover:text-sky-800 disabled:opacity-30': !button,
+        '[text-align:inherit] hover:text-sky-800 disabled:opacity-30': !button,
         'py-1.5 px-5.5 min-h-[3rem] justify-center rounded-lg': button,
         'font-bold text-base/none tracking-wide text-center': button,
         'bg-green-800 text-white': button && primary,

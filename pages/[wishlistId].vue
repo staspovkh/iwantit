@@ -160,9 +160,10 @@ definePageMeta({
       </template>
       <div
         v-if="categories.length > 1"
-        class="flex items-center justify-center gap-4"
+        class="flex items-center justify-center gap-4 mb-8"
       >
         <Tabs
+          class="justify-center"
           :names="categories.map((c) => c.name)"
           @click="selectCategory(categories[$event].id)"
         />
@@ -170,7 +171,7 @@ definePageMeta({
       <ul
         v-if="sortingMode"
         ref="sortingEl"
-        class="grid grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] gap-4 mt-4 user-select-none"
+        class="grid grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] gap-4 user-select-none"
       >
         <li
           v-for="item in sortingItems"
@@ -181,18 +182,17 @@ definePageMeta({
           ]"
         >
           <Image
-            v-if="item.picture?.[0]"
             class="w-full h-full object-cover"
-            :src="item.picture[0]"
+            :src="item.picture?.[0]"
             :alt="item.name"
           />
         </li>
       </ul>
       <div
         v-else
-        class="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-x-4 gap-y-8 mt-4"
+        class="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-x-4 gap-y-8"
       >
-        <WishlistItem
+        <WishlistItemTile
           v-for="(item, index) in items"
           :key="item.id"
           :item="item"

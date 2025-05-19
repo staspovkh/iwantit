@@ -6,11 +6,31 @@ defineProps<{
 </script>
 <template>
   <div>
-    <h1 v-if="title" class="text-center text-2xl font-bold mb-8">
-      {{ title }}
-    </h1>
-    <div v-if="$slots['actions']" class="flex gap-2 justify-end mb-2">
-      <slot name="actions" />
+    <div
+      :class="[
+        'mb-8',
+        {
+          'grid gap-6 md:grid-cols-[1fr_auto_1fr] md:before:block':
+            $slots['actions'],
+        },
+      ]"
+    >
+      <h1 v-if="title" class="text-center text-2xl font-bold">
+        {{ title }}
+      </h1>
+      <div
+        v-if="$slots['actions']"
+        class="flex gap-2 items-center justify-center md:justify-end"
+      >
+        <slot name="actions" />
+      </div>
+    </div>
+    <div
+      v-if="$slots['grid']"
+      id="grid"
+      class="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-x-4 gap-y-8"
+    >
+      <slot name="grid" />
     </div>
     <slot />
     <Spinner :loading="loading" />
