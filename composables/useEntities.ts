@@ -53,7 +53,7 @@ export function useEntities<T extends { id: string; order?: number | null }>(
   const update = (entity?: T) => {
     if (entity) {
       const entityIndex = entities.value.findIndex((e) => e.id === entity.id)
-      if (entityIndex) {
+      if (typeof entityIndex === 'number' && entityIndex >= 0) {
         entities.value[entityIndex] = {
           ...entities.value[entityIndex],
           ...entity,
