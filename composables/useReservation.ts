@@ -1,7 +1,7 @@
 import type { WishlistItem } from '~/types/entities'
 
 export function useReservation() {
-  const { user } = useUser()
+  const { user, guestId } = useUser()
   const reservations = useCookie<string[]>('reservations', {
     default: () => [],
     watch: 'shallow',
@@ -90,6 +90,8 @@ export function useReservation() {
   watch(user, () => {
     if (user.value) {
       get(user.value.id)
+    } else if (guestId.value) {
+      get(guestId.value)
     }
   })
 

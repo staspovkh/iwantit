@@ -1,8 +1,14 @@
 import type { User } from '~/types'
 
+const ONE_YEAR = 365 * 24 * 60 * 60 * 1000
+
 export function useUser() {
   const requestUrl = useRequestURL()
   const user = useSupabaseUser()
+
+  const guestId = useCookie<string>('guestId', {
+    expires: new Date(Date.now() + ONE_YEAR),
+  })
 
   const login = async (token?: string) => {
     const supabase = useSupabaseClient()
@@ -24,6 +30,20 @@ export function useUser() {
     return useSupabaseClient().auth.signOut()
   }
 
+  watch(
+    user,
+    () => {
+      if (!user.value) {
+        if (!guestId.value) {
+          guestId.value = crypto.randomUUID()
+        }
+      } else {
+        guestId.value = ''
+      }
+    },
+    { immediate: true },
+  )
+
   return {
     user: computed<User | undefined>(() => {
       if (user.value) {
@@ -36,6 +56,7 @@ export function useUser() {
       }
       return undefined
     }),
+    guestId: computed(() => guestId.value),
     login,
     logout,
   }

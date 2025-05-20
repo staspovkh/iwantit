@@ -6,7 +6,7 @@ const {
   params: { wishlistId },
 } = useRoute<'wishlistId'>()
 
-const { user } = useUser()
+const { user, guestId } = useUser()
 const {
   loading: wishlistLoading,
   wishlist,
@@ -17,7 +17,7 @@ const {
   removeItem,
   addItemReservation,
   removeItemReservation,
-  addItemCompletion,
+  processItemCompletion,
   sortItems,
   selectCategory,
 } = useWishlist(String(wishlistId))
@@ -55,7 +55,6 @@ const submitEdit = async (item: Partial<Wishlist>) => {
 
 const itemEditOpen = ref(false)
 const itemToEdit = ref<WishlistItem | undefined>()
-const itemToReserve = ref<WishlistItem | undefined>()
 
 const openItemEdit = (item?: WishlistItem) => {
   itemEditOpen.value = true
@@ -73,26 +72,13 @@ const submitItemEdit = async (item: Partial<WishlistItem>) => {
   closeItemEdit()
 }
 
-const closeItemReserve = () => {
-  itemToReserve.value = undefined
-}
-const submitItemReserve = async (
-  item: WishlistItem,
-  data: {
-    reserve: string
-    reserve_message?: string
-  },
-) => {
-  await addItemReservation(item, data)
-  closeItemReserve()
-}
-const openItemReserve = async (item: WishlistItem) => {
-  if (user.value?.id) {
-    await submitItemReserve(item, {
-      reserve: user.value.id,
+const processItemReservation = async (item: WishlistItem, add?: boolean) => {
+  if (add) {
+    await addItemReservation(item, {
+      reserve: user.value?.id ?? guestId.value,
     })
   } else {
-    itemToReserve.value = item
+    await removeItemReservation(item)
   }
 }
 
@@ -197,7 +183,7 @@ definePageMeta({
       </ul>
       <div
         v-else
-        class="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-x-4 gap-y-8"
+        class="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-x-4 gap-y-10"
       >
         <WishlistItemTile
           v-for="(item, index) in items"
@@ -207,9 +193,8 @@ definePageMeta({
           :preload="!index"
           @edit="openItemEdit(item)"
           @remove="removeItem(item.id)"
-          @complete="addItemCompletion(item, $event)"
-          @reserve:add="openItemReserve(item)"
-          @reserve:remove="removeItemReservation(item)"
+          @complete="processItemCompletion(item, $event)"
+          @reserve="processItemReservation(item, $event)"
         />
       </div>
       <Modal
@@ -220,17 +205,6 @@ definePageMeta({
         <WishlistItemForm
           :item="itemToEdit"
           @submitted="submitItemEdit($event)"
-        />
-      </Modal>
-      <Modal
-        v-if="itemToReserve"
-        title="global.reserve"
-        open
-        @close="closeItemReserve()"
-      >
-        <WishlistItemReserveForm
-          :item="itemToReserve"
-          @submitted="submitItemReserve(itemToReserve, $event)"
         />
       </Modal>
       <Modal

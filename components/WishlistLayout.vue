@@ -8,7 +8,7 @@ defineProps<{
   <div>
     <div
       :class="[
-        'mb-8',
+        'mb-10',
         {
           'grid gap-6 md:grid-cols-[1fr_auto_1fr] md:before:block':
             $slots['actions'],
@@ -31,7 +31,7 @@ defineProps<{
     <div
       v-if="$slots['grid']"
       id="grid"
-      class="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-x-4 gap-y-8"
+      class="grid grid-cols-[repeat(auto-fill,minmax(18rem,1fr))] gap-x-4 gap-y-10"
     >
       <slot name="grid" />
     </div>

@@ -4,6 +4,7 @@ const props = defineProps<{
   icon?: string
   button?: boolean
   secondary?: boolean
+  small?: boolean
 }>()
 const componentName = computed(() => {
   return props.to ? resolveComponent('NuxtLink') : 'button'
@@ -26,14 +27,16 @@ const isExternal = computed(
       'disabled:pointer-events-none',
       {
         '[text-align:inherit] hover:text-sky-800 disabled:opacity-30': !button,
-        'py-1.5 px-5.5 min-h-[3rem] justify-center rounded-lg': button,
-        'font-bold text-base/none tracking-wide text-center': button,
-        'bg-green-800 text-white': button && primary,
-        'hover:bg-green-900 hover:shadow-xl': button && primary,
+        'font-semibold text-base/none tracking-wide text-center': button,
+        'py-1.5 justify-center rounded-lg': button,
+        'px-3 min-h-[2rem]': button && small,
+        'px-5.5 min-h-[3rem]': button && !small,
+        'bg-stone-600 text-white': button && primary,
+        'hover:bg-stone-800 hover:shadow-xl': button && primary,
         'disabled:bg-black/10 disabled:text-black/30 disabled:shadow-none':
           button && primary,
-        'border-1 border-black/10 text-black': button && secondary,
-        'hover:bg-black/10': button && secondary,
+        'border-1 border-black/10 text-stone-800': button && secondary,
+        'bg-white hover:bg-white/50': button && secondary,
         'disabled:border-black/10 disabled:text-black/30': button && secondary,
       },
     ]"

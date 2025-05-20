@@ -125,7 +125,7 @@ export function useWishlist(wishlistIdOrSlug: string) {
     }
   }
 
-  const addItemCompletion = async (item: WishlistItem, completed?: boolean) => {
+  const processItemCompletion = async (item: WishlistItem, completed?: boolean) => {
     await addItem({
       ...item,
       completed: Boolean(completed),
@@ -142,7 +142,7 @@ export function useWishlist(wishlistIdOrSlug: string) {
     removeItem,
     addItemReservation,
     removeItemReservation,
-    addItemCompletion,
+    processItemCompletion,
     sortItems,
     selectCategory,
   }

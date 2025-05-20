@@ -7,8 +7,7 @@ defineEmits<{
   remove: []
   edit: []
   complete: [boolean]
-  'reserve:add': []
-  'reserve:remove': []
+  reserve: [boolean]
 }>()
 defineProps<{
   item: WishlistItem
@@ -39,7 +38,7 @@ defineProps<{
             v-if="!item.reserve && !item.completed"
             button
             secondary
-            @click="$emit('reserve:add')"
+            @click="$emit('reserve', true)"
           >
             {{ $t('global.reserve') }}
           </Action>
@@ -47,12 +46,12 @@ defineProps<{
             v-else-if="checkReservation(item.id)"
             button
             secondary
-            @click="$emit('reserve:remove')"
+            @click="$emit('reserve', false)"
           >
             {{ $t('global.unreserve') }}
           </Action>
           <Action :to="item.link" button>
-            {{ $t('global.toShop') }}
+            {{ $t('global.buy') }}
             <Icon name="ic:outline-open-in-new" />
           </Action>
         </div>

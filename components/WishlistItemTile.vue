@@ -6,14 +6,16 @@ defineEmits<{
   remove: []
   edit: []
   complete: [boolean]
-  'reserve:add': []
-  'reserve:remove': []
+  reserve: [boolean]
 }>()
 defineProps<{
   item: WishlistItem
   actions?: boolean
   preload?: boolean
 }>()
+
+const { checkReservation } = useReservation()
+
 const showDetails = ref(false)
 const openDetails = () => {
   showDetails.value = true
@@ -59,17 +61,33 @@ const closeDetails = () => {
         @click="$emit('remove')"
       />
     </template>
-    <template #title>
-      <Action
-        class="-my-0.5 ml-auto"
-        icon="ic:outline-shopping-cart"
-        :title="$t('global.details')"
-        @click="openDetails()"
-      />
-    </template>
     <p v-if="item.price" class="mt-1 font-bold">
       {{ Number(item.price) }} {{ item.currency }}
     </p>
+    <div class="grid grid-flow-col auto-cols-fr gap-3 mt-2">
+      <Action
+        v-if="!item.reserve && !item.completed"
+        button
+        secondary
+        small
+        @click="$emit('reserve', true)"
+      >
+        {{ $t('global.reserve') }}
+      </Action>
+      <Action
+        v-else-if="checkReservation(item.id)"
+        button
+        secondary
+        small
+        @click="$emit('reserve', false)"
+      >
+        {{ $t('global.unreserve') }}
+      </Action>
+      <Action :to="item.link" button small>
+        {{ $t('global.buy') }}
+        <Icon name="ic:outline-open-in-new" size="16" />
+      </Action>
+    </div>
     <WishlistItemModal
       :item="item"
       :open="showDetails"
@@ -78,8 +96,7 @@ const closeDetails = () => {
       @remove="$emit('remove')"
       @edit="$emit('edit')"
       @complete="$emit('complete', $event)"
-      @reserve:add="$emit('reserve:add')"
-      @reserve:remove="$emit('reserve:remove')"
+      @reserve="$emit('reserve', $event)"
     />
   </Tile>
 </template>
