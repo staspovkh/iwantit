@@ -50,29 +50,56 @@ export function useEntities<T extends { id: string; order?: number | null }>(
     }
   }
 
-  const add = async (entity: Partial<T>) => {
+  const update = (entity?: T) => {
+    if (entity) {
+      const entityIndex = entities.value.findIndex((e) => e.id === entity.id)
+      if (entityIndex) {
+        entities.value[entityIndex] = {
+          ...entities.value[entityIndex],
+          ...entity,
+        }
+      } else {
+        entities.value = [...entities.value, entity]
+      }
+    }
+  }
+
+  const add = async (entity: Partial<T>, force?: boolean) => {
+    let success = false
     const body = getEntityNewData(
       entity,
       entity.id ? entities.value?.find((e) => e.id === entity.id) : undefined,
     )
     if (body) {
       loading.value = true
-      const result = await $fetch(`/api/wishlist/${type}/add`, {
-        method: 'POST',
-        body,
-      })
-      if (result.ok) {
-        await get(true)
+      try {
+        const result = await $fetch(`/api/wishlist/${type}/add`, {
+          method: 'POST',
+          body,
+        })
+        if (result.ok) {
+          update(result.payload?.[0])
+          if (force) {
+            await get(true)
+          }
+          success = true
+        }
+      } catch {
+        success = false
       }
       loading.value = false
     }
+    return success
   }
 
-  const remove = async (id: string) => {
+  const remove = async (id: string, force?: boolean) => {
     loading.value = true
     const result = await removeEntity(id, type)
     if (result.ok) {
-      await get(true)
+      entities.value = entities.value.filter((entity) => entity.id !== id)
+      if (force) {
+        await get(true)
+      }
     }
     loading.value = false
   }
@@ -84,9 +111,10 @@ export function useEntities<T extends { id: string; order?: number | null }>(
   }
 
   return {
-    loading,
-    entities,
+    loading: computed(() => loading.value),
+    entities: computed(() => entities.value),
     get,
+    update,
     add,
     remove,
     sort,

@@ -26,9 +26,9 @@ export default defineEventHandler(async (event) => {
           'tag',
           newTagNames.map((name: string) => ({ name })),
         )
-        savedTags.push(...newTags)
+        savedTags?.push(...newTags)
       }
-      body.tag = savedTags.map((tag: { id: string }) => tag.id)
+      body.tag = savedTags?.map((tag: { id: string }) => tag.id)
     } else {
       body.tag = undefined
     }

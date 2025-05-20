@@ -6,6 +6,11 @@ type WishlistExt = Wishlist & {
 }
 
 export function useWishlist(wishlistIdOrSlug: string) {
+  const {
+    addReservation,
+    removeReservation,
+    loading: reservationLoading,
+  } = useReservation()
   const wishlist = useState<WishlistExt | null>(
     `wishlist-${wishlistIdOrSlug}`,
     () => null,
@@ -31,6 +36,7 @@ export function useWishlist(wishlistIdOrSlug: string) {
   const {
     loading: itemLoading,
     entities: wishlistItems,
+    update: updateItemEntity,
     add: addItemEntity,
     remove: removeItem,
     sort: sortItems,
@@ -53,7 +59,10 @@ export function useWishlist(wishlistIdOrSlug: string) {
     },
   )
 
-  const loading = computed(() => wishlistLoading.value || itemLoading.value)
+  const loading = computed(
+    () =>
+      wishlistLoading.value || itemLoading.value || reservationLoading.value,
+  )
 
   const addItem = async (item: Partial<WishlistItem>) => {
     await addItemEntity({ ...item, wishlist: wishlist.value?.id })
@@ -103,18 +112,17 @@ export function useWishlist(wishlistIdOrSlug: string) {
       reserve_message?: string
     },
   ) => {
-    await addItemEntity({
-      id: item.id,
-      ...data,
-    })
+    const updatedItem = await addReservation(item.id, data)
+    if (updatedItem) {
+      updateItemEntity(updatedItem)
+    }
   }
 
   const removeItemReservation = async (item: WishlistItem) => {
-    await addItemEntity({
-      id: item.id,
-      reserve: null,
-      reserve_message: null,
-    })
+    const updatedItem = await removeReservation(item.id)
+    if (updatedItem) {
+      updateItemEntity(updatedItem)
+    }
   }
 
   const addItemCompletion = async (item: WishlistItem, completed?: boolean) => {

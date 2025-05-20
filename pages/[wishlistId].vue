@@ -22,13 +22,14 @@ const {
   selectCategory,
 } = useWishlist(String(wishlistId))
 const { loading: wishlistsLoading, addWishlist } = useWishlists()
+const localePath = useLocalePath()
 
 const loading = computed(() => wishlistLoading.value || wishlistsLoading.value)
 
 onMounted(async () => {
   await getWishlist()
   if (!wishlist.value) {
-    return navigateTo({ name: 'index' })
+    return navigateTo(localePath({ name: 'index' }))
   }
 })
 
@@ -72,9 +73,6 @@ const submitItemEdit = async (item: Partial<WishlistItem>) => {
   closeItemEdit()
 }
 
-const openItemReserve = (item: WishlistItem) => {
-  itemToReserve.value = item
-}
 const closeItemReserve = () => {
   itemToReserve.value = undefined
 }
@@ -87,6 +85,15 @@ const submitItemReserve = async (
 ) => {
   await addItemReservation(item, data)
   closeItemReserve()
+}
+const openItemReserve = async (item: WishlistItem) => {
+  if (user.value?.id) {
+    await submitItemReserve(item, {
+      reserve: user.value.id,
+    })
+  } else {
+    itemToReserve.value = item
+  }
 }
 
 const sortingMode = ref(false)
@@ -217,7 +224,7 @@ definePageMeta({
       </Modal>
       <Modal
         v-if="itemToReserve"
-        :title="$t('global.reserve')"
+        title="global.reserve"
         open
         @close="closeItemReserve()"
       >

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { WishlistItem } from '~/types/entities'
+const { checkReservation } = useReservation()
 
 defineEmits<{
   close: []
@@ -16,8 +17,8 @@ defineProps<{
 }>()
 </script>
 <template>
-  <Modal :open="open" medium @close="$emit('close')">
-    <div class="grid md:grid-cols-2 -m-5 -mt-15 text-base">
+  <Modal :open="open" medium sticky @close="$emit('close')">
+    <div class="grid md:grid-cols-2 -m-4 -mt-15 text-base">
       <div class="relative">
         <Image
           class="w-full h-full"
@@ -42,10 +43,17 @@ defineProps<{
             v-if="!item.reserve && !item.completed"
             button
             secondary
-            :disabled="item.reserve || item.completed"
             @click="$emit('reserve:add')"
           >
             {{ $t('global.reserve') }}
+          </Action>
+          <Action
+            v-else-if="checkReservation(item.id)"
+            button
+            secondary
+            @click="$emit('reserve:remove')"
+          >
+            {{ $t('global.unreserve') }}
           </Action>
           <Action :to="item.link" button>
             {{ $t('global.toShop') }}

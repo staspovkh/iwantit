@@ -18,6 +18,7 @@ const getEntitySchema = (type: EntityType) =>
 
 const getAllBodySchema = z.object({
   ids: z.array(z.string()).optional(),
+  reservedBy: z.string().optional(),
   public: z.boolean().optional(),
   children: z.array(entityTypeSchema).optional(),
   filters: z
@@ -32,6 +33,7 @@ export const getEntities = async (
 ) => {
   const {
     ids,
+    reservedBy,
     public: ePublic,
     children,
     filters,
@@ -67,6 +69,8 @@ export const getEntities = async (
 
   if (ids?.length) {
     query.in('id', ids)
+  } else if (reservedBy) {
+    query.eq('reserve', reservedBy)
   } else if (ePublic) {
     query.eq('public', true)
   } else {

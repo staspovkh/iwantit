@@ -1,6 +1,7 @@
 export default defineNuxtRouteMiddleware(async () => {
   const user = useSupabaseUser()
   if (!user.value?.id) {
-    return navigateTo({ name: 'index' })
+    const localePath = useLocalePath()
+    return navigateTo(localePath({ name: 'index' }))
   }
 })

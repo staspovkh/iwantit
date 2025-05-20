@@ -70,7 +70,7 @@ export const fields: Record<string, Input> = {
   },
   reserve: {
     type: 'text',
-    label: 'forms.reserve',
+    label: 'forms.reserve.title',
     required: true,
     minlength: 2,
   },

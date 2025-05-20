@@ -5,7 +5,7 @@ const { user } = useUser()
 
 const defaultModel = {
   reserve: user.value?.name || '',
-  reserve_message: '',
+  // reserve_message: '',
 }
 
 const emit = defineEmits<{

@@ -1,12 +1,15 @@
 <script setup lang="ts">
+const { user } = useUser()
+watch(user, () => {
+  if (!user.value) {
+    const localePath = useLocalePath()
+    return navigateTo(localePath({ name: 'index' }))
+  }
+})
+
 definePageMeta({
   keepalive: true,
-  middleware: defineNuxtRouteMiddleware(async () => {
-    const { user } = useUser()
-    if (!user.value) {
-      return navigateTo({ name: 'index' })
-    }
-  }),
+  middleware: ['auth'],
 })
 </script>
 <template>

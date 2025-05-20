@@ -66,7 +66,7 @@ export interface InputSelect extends InputTemplate {
 
 export type Input = InputText | InputCheckbox | InputSelect
 
-export type FieldsExt = Record<string, Partial<Input>>
+export type FieldsExt = Record<string, Partial<Input> | undefined>
 
 export interface Form {
   name: string

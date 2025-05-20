@@ -21,7 +21,6 @@ export default defineNuxtConfig({
     '@nuxthub/core',
     '@nuxtjs/supabase',
     '@nuxt/eslint',
-    '@nuxt/fonts',
     '@nuxt/icon',
     '@nuxt/image',
     '@nuxt/scripts',
@@ -36,10 +35,6 @@ export default defineNuxtConfig({
     // eslint-disable-next-line max-len
     key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd2d1bWZ4c211dWhmanBsdHNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQzOTM0MjgsImV4cCI6MjA1OTk2OTQyOH0.Q0SCZusN--0Jsh1dAl0r6e49l9o2_yBWyUPh6crLmpU',
     redirect: false,
-  },
-  fonts: {
-    processCSSVariables: true,
-    families: [{ name: 'Inter', provider: 'google' }],
   },
   icon: {
     mode: 'svg',

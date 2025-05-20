@@ -36,9 +36,10 @@ const closeDetails = () => {
     </template>
     <template v-if="actions" #actions>
       <Action
-        icon="ic:outline-edit"
-        :title="$t('global.edit')"
-        @click="$emit('edit')"
+        v-if="item.reserve"
+        icon="ic:baseline-undo"
+        :title="$t('global.unreserve')"
+        @click="$emit('reserve:remove')"
       />
       <Action
         :icon="
@@ -46,6 +47,11 @@ const closeDetails = () => {
         "
         :title="$t(item.completed ? 'global.unpublish' : 'global.publish')"
         @click="$emit('complete', !item.completed)"
+      />
+      <Action
+        icon="ic:outline-edit"
+        :title="$t('global.edit')"
+        @click="$emit('edit')"
       />
       <Action
         icon="ic:outline-delete-forever"

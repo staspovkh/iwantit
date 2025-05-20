@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { WishlistItem } from '~/types/entities'
 defineProps<{ item: WishlistItem }>()
+const { checkReservation } = useReservation()
 </script>
 <template>
   <div
@@ -19,6 +20,14 @@ defineProps<{ item: WishlistItem }>()
       class="text-green-600"
       size="16"
     />
-    {{ $t(item.completed ? 'global.completed' : 'global.reserved') }}
+    {{
+      $t(
+        item.completed
+          ? 'global.completed'
+          : checkReservation(item.id)
+            ? 'global.reserved_by_me'
+            : 'global.reserved',
+      )
+    }}
   </div>
 </template>

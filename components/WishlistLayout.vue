@@ -15,7 +15,10 @@ defineProps<{
         },
       ]"
     >
-      <h1 v-if="title" class="text-center text-2xl font-bold">
+      <h1
+        v-if="title"
+        class="text-center text-2xl font-serif font-bold tracking-wide"
+      >
         {{ title }}
       </h1>
       <div

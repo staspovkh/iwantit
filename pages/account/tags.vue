@@ -55,11 +55,6 @@ const toggleSorting = (enable?: boolean) => {
     })
   }
 }
-
-definePageMeta({
-  keepalive: true,
-  middleware: ['auth'],
-})
 </script>
 <template>
   <div>
