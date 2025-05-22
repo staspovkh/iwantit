@@ -26,7 +26,7 @@ useSeoMeta({
         width="160"
         class="w-1/2 mx-auto mt-[2em] mb-[2.4em]"
       />
-      <p>Чекаємо на вас у неділю, 1 червня</p>
+      <p>Чекаємо на вас у неділю, <span class="font-bold">1 червня</span></p>
       <p class="mt-[1.2em]">
         <span class="font-bold">12:00</span> -<br />
         Храм преподобного Амфілохія Почаївського,<br />
