@@ -1,3 +1,8 @@
+<script setup lang="ts">
+useSeoMeta({
+  title: 'Запрошення',
+})
+</script>
 <template>
   <div class="max-w-xs mx-auto text-center text-xl font-cursive tracking-wide">
     <Image

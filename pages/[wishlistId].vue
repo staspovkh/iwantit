@@ -6,6 +6,7 @@ const {
   params: { wishlistId },
 } = useRoute<'wishlistId'>()
 
+const { t } = useI18n()
 const { user, guestId } = useUser()
 const {
   loading: wishlistLoading,
@@ -113,6 +114,22 @@ watch(items, () => {
     toggleSorting(true)
   }
 })
+
+useSeoMeta({
+  title: t('wishlist.title'),
+})
+
+watch(
+  wishlist,
+  () => {
+    useSeoMeta({
+      title: wishlist.value?.name ?? t('wishlist.title'),
+    })
+  },
+  {
+    immediate: true,
+  },
+)
 
 definePageMeta({
   keepalive: true,
