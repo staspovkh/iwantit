@@ -4,7 +4,7 @@
 @theme {
   --font-sans: 'Inter', sans-serif;
   --font-serif: 'Noto Serif', serif;
-  --font-cursive: 'Great Vibes', cursive;
+  --font-cursive: 'Great Vibes', serif;
 
   --color-main: #1E1E2F;
   --color-error: #DE350B;

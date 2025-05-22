@@ -38,7 +38,10 @@
       />
       <span class="block text-[0.8em] mb-2">
         Ідеями для подарунку можна надихнутись
-        <Action class="!inline underline" :to="'/nazar'" target="_blank"
+        <Action
+          class="!inline font-bold underline"
+          :to="'/nazar'"
+          target="_blank"
           >тут</Action
         >, однак
       </span>
