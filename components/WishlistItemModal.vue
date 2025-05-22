@@ -17,7 +17,7 @@ defineProps<{
 </script>
 <template>
   <Modal :open="open" medium sticky @close="$emit('close')">
-    <div class="grid md:grid-cols-2 -m-4 -mt-14 text-base">
+    <div class="md:grid md:grid-cols-2 -m-4 -mt-14 text-base">
       <div class="relative aspect-square md:aspect-auto md:flex">
         <Image class="w-full" :src="item.picture?.[0]" :alt="item.name" />
         <WishlistItemStatus :item="item" class="absolute top-3 left-3" />
