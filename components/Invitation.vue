@@ -49,7 +49,6 @@ useSeoMeta({
           <Action
             class="!inline font-bold underline !transition-none"
             :to="'/nazar'"
-            target="_blank"
             >тут</Action
           >, однак
         </span>
