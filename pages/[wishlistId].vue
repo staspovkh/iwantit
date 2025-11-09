@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Tabs from '~/components/Tabs.vue'
 import type { Wishlist, WishlistItem } from '~/types/entities'
 
 const {
@@ -175,7 +174,7 @@ definePageMeta({
         <Tabs
           class="justify-center"
           :names="categories.map((c) => c.name)"
-          @click="selectCategory(categories[$event].id)"
+          @click="selectCategory(categories[$event]?.id)"
         />
       </div>
       <ul
