@@ -48,7 +48,7 @@ export function useUser() {
     user: computed<User | undefined>(() => {
       if (user.value) {
         return {
-          id: user.value.id,
+          id: user.value.sub,
           email: user.value.email,
           name: user.value.user_metadata?.full_name ?? '',
           picture: user.value.user_metadata?.avatar_url ?? '',
