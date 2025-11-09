@@ -31,9 +31,9 @@ export default defineNuxtConfig({
     browser: true,
   },
   supabase: {
-    url: 'https://zgwgumfxsmuuhfjpltsr.supabase.co',
+    url: 'https://tbzwihzocmryrnxazqng.supabase.co',
     // eslint-disable-next-line max-len
-    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpnd2d1bWZ4c211dWhmanBsdHNyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQzOTM0MjgsImV4cCI6MjA1OTk2OTQyOH0.Q0SCZusN--0Jsh1dAl0r6e49l9o2_yBWyUPh6crLmpU',
+    key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRiendpaHpvY21yeXJueGF6cW5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2NDc0NjIsImV4cCI6MjA3ODIyMzQ2Mn0.kumV9gC6DGmRMEeABDINHEkR4KjsWk8jhjChNxmINjs',
     redirect: false,
   },
   icon: {
