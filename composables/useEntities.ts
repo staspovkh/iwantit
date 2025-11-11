@@ -59,7 +59,7 @@ export function useEntities<T extends { id: string; order?: number | null }>(
           ...entity,
         }
       } else {
-        entities.value = [...entities.value, entity]
+        entities.value = [entity, ...entities.value]
       }
     }
   }

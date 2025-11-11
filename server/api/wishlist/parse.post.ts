@@ -102,57 +102,75 @@ const getBrand = (html: HTMLElement, data?: MetaRecord) => {
   )
 }
 
+const parsePageHTML = (result?: string) => {
+  const html = parse(result ?? '', {
+    parseNoneClosedTags: true,
+  })
+  const data = html
+    .querySelectorAll('script[type="application/ld+json"]')
+    ?.map((el) => jsonParse(el.innerHTML))
+    .find((item) =>
+      Array.isArray(item['@type'])
+        ? item['@type'].includes('Product')
+        : item['@type'] === 'Product',
+    )
+
+  const image = getImage(html, data)
+
+  return payloadSchema.parse({
+    name: getName(html, data),
+    description: getDescription(html, data),
+    picture: image ? [image] : undefined,
+    price: getPrice(html, data),
+    currency: getCurrency(html, data),
+    brand: getBrand(html, data),
+  })
+}
+
 const fetchPageHTML = async (url: string) => {
   let result
   try {
     result = await $fetch(url)
   } catch {
-    result = null
+    //
   }
-  return result
+  return result as string | undefined
 }
 
 const scrapPageHTML = async (url: string) => {
-  const { page } = await hubBrowser()
-  await page.goto(url, { waitUntil: 'networkidle0' })
-  const result = await page.content()
-  return result
+  try {
+    const { page } = await hubBrowser()
+    await page.goto(url, { waitUntil: 'domcontentloaded' })
+    const result = await page.content()
+    return result
+  } catch (err) {
+    console.error('Hub browser failed, falling back to fetch', err)
+  }
+
+  return undefined
 }
 
 export default defineEventHandler(async (event) => {
   const { url } = await readValidatedBody(event, bodySchema.parse)
-  const result = (await fetchPageHTML(url)) ?? (await scrapPageHTML(url))
-  if (typeof result === 'string') {
-    const html = parse(result, {
-      parseNoneClosedTags: true,
-    })
-    const data = html
-      .querySelectorAll('script[type="application/ld+json"]')
-      ?.map((el) => jsonParse(el.innerHTML))
-      .find((item) =>
-        Array.isArray(item['@type'])
-          ? item['@type'].includes('Product')
-          : item['@type'] === 'Product',
-      )
 
-    const image = getImage(html, data)
+  const handlers = [fetchPageHTML, scrapPageHTML]
 
-    const payload = payloadSchema.parse({
-      name: getName(html, data),
-      description: getDescription(html, data),
-      picture: image ? [image] : undefined,
-      price: getPrice(html, data),
-      currency: getCurrency(html, data),
-      brand: getBrand(html, data),
-      link: url,
-    })
+  while (handlers.length) {
+    const handler = handlers.shift()
+    if (handler) {
+      const result = await handler(url)
+      const payload = parsePageHTML(result)
 
-    return {
-      ok: true,
-      payload,
-      result,
+      if (Object.values(payload).some((value) => value)) {
+        return {
+          ok: true,
+          payload,
+          result,
+        }
+      }
     }
   }
+
   return {
     ok: false,
     payload: null,
